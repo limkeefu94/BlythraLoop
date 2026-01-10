@@ -7828,13 +7828,8 @@ window.handleDeleteAsset = async function (type, id) {
     // 更新 LocalStorage
     // 这里需要先获取全部数据，剔除旧的 type 数据，再合并新的
     const allData = JSON.parse(localStorage.getItem('gembrow_data') || '[]');
-    // 🔥 [Fix] 防重复：如果 dedupeKey 已存在就不再插入
-    if (opts && opts.dedupeKey) {
-        const key = String(opts.dedupeKey);
-        if (allData.some(n => n && n.type === 'notification' && String(n.dedupeKey || '') === key)) {
-            return;
-        }
-    }
+
+
     const otherData = allData.filter(d => d.type !== type);
 
     localStorage.setItem('gembrow_data', JSON.stringify([...otherData, ...newData]));

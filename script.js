@@ -7633,6 +7633,69 @@ function showNotificationModal() {
     document.getElementById('closeNotiModal').addEventListener('click', close);
     modal.addEventListener('click', (e) => { if (e.target === modal) close(); });
 
+    // 🔥 [Fix] 绑定“全部已读”和“清除全部”按钮逻辑
+    const markReadBtn = document.getElementById('markAllNotiRead');
+    if (markReadBtn) {
+        markReadBtn.onclick = () => {
+            let allData = JSON.parse(localStorage.getItem('gembrow_data') || '[]');
+            let updated = false;
+
+            // 1. 标记所有个人消息为已读
+            allData = allData.map(item => {
+                if (item.type === 'notification') {
+                    const isForMe = (item.targetUser === currentUser) || (!item.targetUser && currentUser === 'admin');
+                    if (isForMe && !item.isRead) {
+                        item.isRead = true;
+                        updated = true;
+                    }
+                }
+                return item;
+            });
+
+            // 2. 标记所有系统消息为已读 (通过 ID 列表)
+            const sysNotis = allData.filter(n => n.type === 'notification' && n.targetUser === 'all');
+            const readIds = JSON.parse(localStorage.getItem(`read_sys_notis_${currentUser}`) || '[]');
+            let sysUpdated = false;
+            sysNotis.forEach(n => {
+                if (!readIds.includes(String(n.id))) {
+                    readIds.push(String(n.id));
+                    sysUpdated = true;
+                }
+            });
+            if (sysUpdated) localStorage.setItem(`read_sys_notis_${currentUser}`, JSON.stringify(readIds));
+
+            // 3. 保存并刷新
+            if (updated) localStorage.setItem('gembrow_data', JSON.stringify(allData));
+
+            showToast('✅ 全部已标记为已读');
+            modal.remove();
+            showNotificationModal(); // 刷新弹窗
+            renderApp(); // 刷新红点
+        };
+    }
+
+    const clearAllBtn = document.getElementById('clearAllNoti');
+    if (clearAllBtn) {
+        clearAllBtn.onclick = () => {
+            if (!confirm('确定要清除所有通知吗？(系统公告除外)')) return;
+
+            let allData = JSON.parse(localStorage.getItem('gembrow_data') || '[]');
+            // 过滤掉当前用户的个人消息
+            const otherData = allData.filter(item => {
+                if (item.type !== 'notification') return true;
+                // 只删除明确发给我的，targetUser === 'all' (系统公告) 保留
+                if (item.targetUser === currentUser) return false;
+                return true;
+            });
+
+            localStorage.setItem('gembrow_data', JSON.stringify(otherData));
+            showToast('🗑️ 已清除所有通知');
+            modal.remove();
+            showNotificationModal();
+            renderApp();
+        };
+    }
+
     // 查看详情逻辑
     window.viewNotificationDetail = (id) => {
         // 注意：这里重新获取原始数据，防止 map 后的数据丢失字段
@@ -8193,31 +8256,6 @@ function createNotification(targetUser, title, msg, opts = {}) {
     // 只有当前登录用户是接收者时，才弹窗
     if (window.loggedInCustomerName === targetUser ||
         (targetUser === 'admin' && window.currentMode === 'owner')) {
-        showToast(`🔔 ${title}`);
-    }
-}
-
-// 辅助：内部创建通知函数 (修复 Admin 接收问题)
-function createNotification(targetUser, title, msg) {
-    const noti = {
-        type: 'notification',
-        category: 'alert',
-        subtype: 'automation',
-        version: Date.now(), // 唯一ID
-        title: title,
-        message: msg,
-        targetUser: targetUser,
-        isRead: false,
-        createdAt: new Date().toISOString()
-    };
-
-    // 读取 -> 插入 -> 保存
-    const allData = JSON.parse(localStorage.getItem('gembrow_data') || '[]');
-    allData.push(noti);
-    localStorage.setItem('gembrow_data', JSON.stringify(allData));
-
-    // 如果当前登录的人就是目标，弹个 Toast
-    if (window.loggedInCustomerName === targetUser || (targetUser === 'admin' && window.currentMode === 'owner')) {
         showToast(`🔔 ${title}`);
     }
 }

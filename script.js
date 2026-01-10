@@ -10,10 +10,10 @@ window.elementSdk = {
         secondary_action_color: '#f472b6',
         font_family: 'Playfair Display',
         font_size: 16,
-        
+
         // 👇【关键修复】这里必须加上 app_title，否则 Footer 会显示 undefined
-        app_title: 'Gem Brow beauty', 
-        
+        app_title: 'Gem Brow beauty',
+
         posts_title: '店铺动态'
     },
     init: async (options) => {
@@ -87,13 +87,13 @@ window.elementSdk = {
         app_title: 'Gem Brow beauty',
         posts_title: '店铺动态'
     },
-    init: async (options) => { 
-        console.log('SDK Ready'); 
+    init: async (options) => {
+        console.log('SDK Ready');
         // 合并默认配置
         if (options && options.defaultConfig) {
             Object.assign(window.elementSdk.config, options.defaultConfig);
         }
-        if (options.onConfigChange) options.onConfigChange(window.elementSdk.config); 
+        if (options.onConfigChange) options.onConfigChange(window.elementSdk.config);
     },
     setConfig: (newConfig) => {
         Object.assign(window.elementSdk.config, newConfig);
@@ -160,7 +160,7 @@ const dataHandler = {
         if (currentMode === 'login') {
             try {
                 // 👇 改为 sessionStorage (Tab 独立)
-                const sessionStr = sessionStorage.getItem('gembrow_session'); 
+                const sessionStr = sessionStorage.getItem('gembrow_session');
                 if (sessionStr) {
                     const session = JSON.parse(sessionStr);
                     // 检查是否过期
@@ -168,7 +168,7 @@ const dataHandler = {
                         console.log('🔄 发现有效会话 (Tab独立)，自动登录中...');
                         if (session.mode === 'owner') {
                             currentMode = 'owner';
-                            currentView = 'manage'; 
+                            currentView = 'manage';
                         } else if (session.mode === 'customer') {
                             // 确保这个用户还存在
                             const userExists = data.find(u => u.username === session.username && u.type === 'customer_account');
@@ -215,14 +215,14 @@ function getDataByType(type) {
     return allData.filter(item => item.type === type);
 }
 
-async function createRecord(record) { 
+async function createRecord(record) {
     if (allData.length >= 999) {
         showToast('已达到最大记录数999');
         return false;
     }
     isLoading = true;
     renderApp();
-    
+
     // 👇 v1.1.0 新增：自动注入租户ID (为未来 SaaS 铺路)
     const recordWithTenant = {
         ...record,
@@ -434,15 +434,15 @@ async function handleRegister(username, password, email) {
 // ==========================================
 // 👇 [v1.3.6 (Beta Fix] 登出函数 (清理 Tab 会话)
 // ==========================================
-window.handleLogout = function() {
+window.handleLogout = function () {
     // 1. 清除会话 (Tab 独立)
     sessionStorage.removeItem('gembrow_session'); // 👇 改为 sessionStorage
-    
+
     // 2. 重置状态
     loggedInCustomerName = null;
-    currentMode = 'login'; 
-    showMenu = false;      
-    
+    currentMode = 'login';
+    showMenu = false;
+
     // 3. 刷新
     showToast('已退出登录');
     renderApp();
@@ -463,7 +463,7 @@ function getMembershipBadge(level, config) {
 function renderApp() {
     // 📌 关键修复：每次渲染前重新加载 localStorage 的最新数据
     allData = loadDb();
-    
+
     console.log('renderApp called, currentMode:', currentMode);
     const app = document.getElementById('app');
     const config = window.elementSdk?.config || defaultConfig;
@@ -493,17 +493,17 @@ function renderApp() {
 function renderLoginPage() {
     const app = document.getElementById('app');
     const config = window.elementSdk?.config || defaultConfig; // 防止 config 为空
-    const settings = getDiscountSettings(); 
+    const settings = getDiscountSettings();
 
     // 背景设置
-    const bgStyle = config.background_image 
-        ? `background-image: url('${config.background_image}'); background-size: cover; background-position: center;` 
+    const bgStyle = config.background_image
+        ? `background-image: url('${config.background_image}'); background-size: cover; background-position: center;`
         : `background: linear-gradient(135deg, #fff1eb 0%, #ace0f9 100%);`;
 
     // 决定显示什么 Logo
     const displayLogo = settings.logo_login || settings.logo_url;
     const logoContent = displayLogo
-        ? `<img src="${displayLogo}" class="w-full h-full object-cover rounded-full filter drop-shadow-md">` 
+        ? `<img src="${displayLogo}" class="w-full h-full object-cover rounded-full filter drop-shadow-md">`
         : `<span class="text-5xl">💎</span>`;
 
     app.innerHTML = `
@@ -603,14 +603,14 @@ function renderLoginPage() {
         // 📝 注册逻辑 (修复：强制校验手机/邮箱唯一性)
         document.getElementById('registerForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            if(!document.getElementById('agreeTerms').checked) {
+            if (!document.getElementById('agreeTerms').checked) {
                 alert("请先勾选同意条款！"); return;
             }
-            
+
             const u = document.getElementById('regUsername').value.trim();
             const p = document.getElementById('regPassword').value;
             const eMail = document.getElementById('regEmail').value.trim();
-            const ph = cleanPhoneNumber(document.getElementById('regPhone').value); 
+            const ph = cleanPhoneNumber(document.getElementById('regPhone').value);
 
             const allCustomers = getDataByType('customer_account');
 
@@ -645,13 +645,13 @@ function renderLoginPage() {
                 membershipLevel: 'bronze'
             });
 
-            if(success) {
+            if (success) {
                 showToast('✅ 注册成功！请登录');
                 showRegisterForm = false; // 切换回登录页
                 renderApp();
             }
         });
-        
+
         // 绑定条款链接点击事件
         document.getElementById('regLinkTerms').addEventListener('click', (e) => { e.preventDefault(); showPolicyModal(config, 'terms'); });
         document.getElementById('regLinkPrivacy').addEventListener('click', (e) => { e.preventDefault(); showPolicyModal(config, 'privacy'); });
@@ -667,7 +667,7 @@ function renderLoginPage() {
 
             // 1. 检查业主
             const owners = getDataByType('owner_credentials');
-            const isOwner = owners.length > 0 
+            const isOwner = owners.length > 0
                 ? owners.some(o => o.username === user && o.password === pass)
                 : (user === 'admin' && pass === '1231');
 
@@ -676,7 +676,7 @@ function renderLoginPage() {
                 // 🔥 关键修改：存入 sessionStorage
                 sessionStorage.setItem('gembrow_session', JSON.stringify(session));
                 showToast('👑 欢迎回来，老板！');
-                setTimeout(() => location.reload(), 500); 
+                setTimeout(() => location.reload(), 500);
                 return;
             }
 
@@ -696,15 +696,15 @@ function renderLoginPage() {
         });
 
         document.getElementById('showRegisterBtn').addEventListener('click', () => { showRegisterForm = true; renderApp(); });
-        document.getElementById('guestBtn').addEventListener('click', () => { 
-            loggedInCustomerName = ''; currentMode = 'customer'; currentView = 'services'; renderApp(); 
+        document.getElementById('guestBtn').addEventListener('click', () => {
+            loggedInCustomerName = ''; currentMode = 'customer'; currentView = 'services'; renderApp();
         });
     }
 
     // 重置密码逻辑 (业主通道)
     document.getElementById('forgotOwnerBtn').addEventListener('click', () => {
         const code = prompt("🔐 业主通道\n请输入恢复码：");
-        if (code && btoa(code) === 'ODg4OA==') { 
+        if (code && btoa(code) === 'ODg4OA==') {
             let allData = JSON.parse(localStorage.getItem('gembrow_data') || '[]');
             allData = allData.filter(item => item.type !== 'owner_credentials');
             allData.push({ type: 'owner_credentials', username: 'admin', password: '1231' });
@@ -724,7 +724,7 @@ function renderMainApp(app, config, services, bookings, posts, customers) {
     cleanupDuplicateNotifications(); // 🔥 紧急清理重复通知
     const currentYear = new Date().getFullYear();
     const settings = getDiscountSettings();
-    
+
     window.toggleMenu = () => {
         showMenu = !showMenu;
         renderApp();
@@ -744,8 +744,8 @@ function renderMainApp(app, config, services, bookings, posts, customers) {
         // 顾客：尝试查找头像，如果没有就用名字生成
         const currentCustomer = customers.find(c => c.username === loggedInCustomerName);
         // 如果顾客数据里有 avatar 字段就用，没有就用 ui-avatars 生成
-        userAvatarUrl = (currentCustomer && currentCustomer.avatar) 
-            ? currentCustomer.avatar 
+        userAvatarUrl = (currentCustomer && currentCustomer.avatar)
+            ? currentCustomer.avatar
             : `https://ui-avatars.com/api/?name=${encodeURIComponent(loggedInCustomerName)}&background=random&color=fff&size=128`;
         userDisplayName = loggedInCustomerName;
         userRoleName = "Verified Member";
@@ -774,28 +774,28 @@ function renderMainApp(app, config, services, bookings, posts, customers) {
                     <div class="flex items-center gap-3">
                         
                         ${(() => {
-                        const currentUser = window.currentMode === 'owner' ? 'admin' : window.loggedInCustomerName;
-                        const readSystemIds = JSON.parse(localStorage.getItem(`read_sys_notis_${currentUser}`) || '[]');
-                        
-                        const allNotis = getDataByType('notification');
-                        
-                        // 🔥 使用完全相同的筛选逻辑
-                        const unreadCount = allNotis.filter(n => {
-                            // 1. 筛选发给我的
-                            let isForMe = (n.targetUser === currentUser) || (n.targetUser === 'all') || (!n.targetUser && currentUser === 'admin');
-                            if (!isForMe) return false;
-                            
-                            // 2. 筛选未读的
-                            if (n.targetUser === 'all') {
-                                // 系统消息：检查 ID 是否在已读列表
-                                return !readSystemIds.some(id => String(id) === String(n.id));
-                            } else {
-                                // 个人消息：检查 isRead 字段
-                                return !n.isRead;
-                            }
-                        }).length;
-                        
-                        return `
+            const currentUser = window.currentMode === 'owner' ? 'admin' : window.loggedInCustomerName;
+            const readSystemIds = JSON.parse(localStorage.getItem(`read_sys_notis_${currentUser}`) || '[]');
+
+            const allNotis = getDataByType('notification');
+
+            // 🔥 使用完全相同的筛选逻辑
+            const unreadCount = allNotis.filter(n => {
+                // 1. 筛选发给我的
+                let isForMe = (n.targetUser === currentUser) || (n.targetUser === 'all') || (!n.targetUser && currentUser === 'admin');
+                if (!isForMe) return false;
+
+                // 2. 筛选未读的
+                if (n.targetUser === 'all') {
+                    // 系统消息：检查 ID 是否在已读列表
+                    return !readSystemIds.some(id => String(id) === String(n.id));
+                } else {
+                    // 个人消息：检查 isRead 字段
+                    return !n.isRead;
+                }
+            }).length;
+
+            return `
                             <button onclick="showNotificationModal(elementSdk.config)" 
                                 class="relative p-2 rounded-xl transition-all hover:bg-gray-100 group">
                                 <span class="text-2xl group-hover:scale-110 transition-transform block">📬</span>
@@ -806,7 +806,7 @@ function renderMainApp(app, config, services, bookings, posts, customers) {
                                 ` : ''}
                             </button>
                         `;
-                    })()}
+        })()}
 
                     <button onclick="toggleMenu()" 
                         class="px-4 py-2 rounded-xl font-bold flex items-center gap-2 hover:bg-gray-50 active:scale-95 transition-all" 
@@ -932,9 +932,9 @@ function renderMainApp(app, config, services, bookings, posts, customers) {
 // 👇 [v1.3.6 Beta] 老板后台 (修复：取消撤回时限 & 样式保持)
 // ==========================================
 function renderOwnerView(config, services, bookings, posts, customers) {
-    window.cashierMode = window.cashierMode || 'booking'; 
-    window.ownerContentTab = window.ownerContentTab || 'service'; 
-    
+    window.cashierMode = window.cashierMode || 'booking';
+    window.ownerContentTab = window.ownerContentTab || 'service';
+
     window.filterStatus = window.filterStatus || 'pending';
     window.searchQuery = window.searchQuery || '';
     window.orderFilterStatus = window.orderFilterStatus || 'pending';
@@ -955,9 +955,9 @@ function renderOwnerView(config, services, bookings, posts, customers) {
         if (!window.searchQuery) return true;
         const q = window.searchQuery.toLowerCase();
         return (b.customerName || '').toLowerCase().includes(q) ||
-               (b.customerPhone || '').includes(q) ||
-               (b.serviceName || '').toLowerCase().includes(q) ||
-               (b.receiptNumber || '').toLowerCase().includes(q);
+            (b.customerPhone || '').includes(q) ||
+            (b.serviceName || '').toLowerCase().includes(q) ||
+            (b.receiptNumber || '').toLowerCase().includes(q);
     });
 
     filteredBookings.sort((a, b) => {
@@ -1027,24 +1027,24 @@ function renderOwnerView(config, services, bookings, posts, customers) {
                     ` : `
                         <div class="space-y-4 max-h-[70vh] overflow-y-auto pr-1 custom-scrollbar">
                             ${filteredBookings.map(booking => {
-                                const now = new Date();
-                                let canRevert = false;
-                                let isLocked = false;
-                                
-                                // 🔥 核心修复：计算是否可撤销 (无论是完成还是取消)
-                                const actionTime = booking.completedAt || booking.cancelledAt;
-                                if (actionTime) {
-                                    const diffMins = (now - new Date(actionTime)) / 1000 / 60;
-                                    if (diffMins <= 30) canRevert = true; // 30分钟内可撤销
-                                    if (diffMins / 60 >= 24) isLocked = true;
-                                }
+        const now = new Date();
+        let canRevert = false;
+        let isLocked = false;
 
-                                const isServing = booking.status === 'serving';
-                                const delay = booking.delayMinutes || 0;
-                                const service = services.find(s => s.name === booking.serviceName);
-                                const imgUrl = service ? (service.imageUrl || service.imgUrl) : 'https://cdn-icons-png.flaticon.com/512/2813/2813248.png';
+        // 🔥 核心修复：计算是否可撤销 (无论是完成还是取消)
+        const actionTime = booking.completedAt || booking.cancelledAt;
+        if (actionTime) {
+            const diffMins = (now - new Date(actionTime)) / 1000 / 60;
+            if (diffMins <= 30) canRevert = true; // 30分钟内可撤销
+            if (diffMins / 60 >= 24) isLocked = true;
+        }
 
-                                return `
+        const isServing = booking.status === 'serving';
+        const delay = booking.delayMinutes || 0;
+        const service = services.find(s => s.name === booking.serviceName);
+        const imgUrl = service ? (service.imageUrl || service.imgUrl) : 'https://cdn-icons-png.flaticon.com/512/2813/2813248.png';
+
+        return `
                                     <div onclick="if(typeof showOwnerAppointmentModal === 'function') showOwnerAppointmentModal(elementSdk.config, getDataByType('booking').find(x => x.id === '${booking.id}'))" 
                                          class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 relative hover:shadow-md transition-shadow group cursor-pointer
                                          ${isServing ? 'ring-2 ring-green-500 ring-offset-1' : ''}">
@@ -1105,7 +1105,7 @@ function renderOwnerView(config, services, bookings, posts, customers) {
                                         </div>
                                     </div>
                                 `;
-                            }).join('')}
+    }).join('')}
                         </div>
                     `}
                 </div>
@@ -1165,7 +1165,7 @@ function renderOwnerView(config, services, bookings, posts, customers) {
 // ==========================================
 // 👇 [v1.3.6 (Beta) Fix] 全能财务驾驶舱 (防重算版)
 // ==========================================
-window.statsDateRange = window.statsDateRange || 'today'; 
+window.statsDateRange = window.statsDateRange || 'today';
 
 function renderStats(config, services, bookings, customers, orders) {
     let allTransactions = [];
@@ -1174,7 +1174,7 @@ function renderStats(config, services, bookings, customers, orders) {
     // 只统计 status='completed' 的订单，'cancelled' 的会被自动过滤
     const processedReceipts = new Set(
         orders.filter(o => o.status === 'completed' && o.receiptNumber)
-              .map(o => o.receiptNumber)
+            .map(o => o.receiptNumber)
     );
 
     // A. 处理预约单
@@ -1182,16 +1182,16 @@ function renderStats(config, services, bookings, customers, orders) {
         if (b.status === 'completed') {
             // 🛑 防重防火墙：如果这单已经有对应的 Order 在下面统计了，这里就跳过
             if (b.receiptNumber && processedReceipts.has(b.receiptNumber)) {
-                return; 
+                return;
             }
 
             allTransactions.push({
-                type: 'Service', 
+                type: 'Service',
                 rawDate: new Date(b.completedAt || `${b.appointmentDate}T${b.appointmentTime}`),
                 receiptNo: b.receiptNumber || '-',
                 customer: b.customerName,
                 payment: b.paymentMethod || 'Cash',
-                summary: `💅 ${b.serviceName}`, 
+                summary: `💅 ${b.serviceName}`,
                 amount: parseFloat(b.totalAmount || b.servicePrice || 0),
                 originalObj: b
             });
@@ -1204,7 +1204,7 @@ function renderStats(config, services, bookings, customers, orders) {
         if (o.status === 'completed') {
             const summary = o.items.map(i => `${i.quantity}x ${i.name}`).join(', ');
             allTransactions.push({
-                type: o.isRetail ? 'Retail' : 'Order', 
+                type: o.isRetail ? 'Retail' : 'Order',
                 rawDate: new Date(o.completedAt || o.createdAt),
                 receiptNo: o.receiptNumber || '-',
                 customer: o.customerName,
@@ -1238,16 +1238,16 @@ function renderStats(config, services, bookings, customers, orders) {
 
     const totalRevenue = filteredData.reduce((sum, t) => sum + t.amount, 0);
     const totalCount = filteredData.length;
-    
+
     return `
         <div class="space-y-6">
             <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col md:flex-row justify-between items-center gap-4">
                 <div>
                     <h2 class="text-2xl font-bold text-gray-800">📊 财务报表</h2>
                     <p class="text-xs text-gray-400 mt-1">
-                        ${window.statsDateRange === 'today' ? `📅 今天 (${todayStr})` : 
-                          window.statsDateRange === 'yesterday' ? `⏮ 昨天 (${yesterdayStr})` :
-                          window.statsDateRange === 'month' ? `🗓 本月 (${currentYear}-${currentMonth+1})` : '📈 历史全部数据'}
+                        ${window.statsDateRange === 'today' ? `📅 今天 (${todayStr})` :
+            window.statsDateRange === 'yesterday' ? `⏮ 昨天 (${yesterdayStr})` :
+                window.statsDateRange === 'month' ? `🗓 本月 (${currentYear}-${currentMonth + 1})` : '📈 历史全部数据'}
                     </p>
                 </div>
                 <div class="flex bg-gray-100 p-1 rounded-xl">
@@ -1288,10 +1288,10 @@ function renderStats(config, services, bookings, customers, orders) {
                             </tr>
                         </thead>
                         <tbody class="text-sm">
-                            ${filteredData.length === 0 ? `<tr><td colspan="5" class="p-8 text-center text-gray-400">无记录</td></tr>` : 
-                            filteredData.map(t => `
+                            ${filteredData.length === 0 ? `<tr><td colspan="5" class="p-8 text-center text-gray-400">无记录</td></tr>` :
+            filteredData.map(t => `
                                 <tr class="border-b last:border-0 hover:bg-gray-50 transition-colors">
-                                    <td class="p-4 pl-6 font-mono text-xs text-gray-500">${t.rawDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</td>
+                                    <td class="p-4 pl-6 font-mono text-xs text-gray-500">${t.rawDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</td>
                                     <td class="p-4 font-mono font-bold text-gray-600">${t.receiptNo}</td>
                                     <td class="p-4 font-bold text-gray-800">${t.customer}</td>
                                     <td class="p-4 text-gray-600 truncate max-w-[200px]">${t.summary}</td>
@@ -1365,9 +1365,9 @@ function renderCustomersManagement(config, customers, bookings) {
                         ${customers.length === 0 ? `
                             <tr><td colspan="5" class="p-8 text-center text-gray-400">暂无客户数据</td></tr>
                         ` : customers.map(acc => {
-                            const lateCount = bookings.filter(b => b.customerName === acc.username && (b.markedLate15m || b.markedSevere30m)).length;
+        const lateCount = bookings.filter(b => b.customerName === acc.username && (b.markedLate15m || b.markedSevere30m)).length;
 
-                            return `
+        return `
                             <tr class="border-b last:border-0 hover:bg-gray-50 transition-colors" 
                                 data-name="${acc.username || ''}" 
                                 data-phone="${acc.phone || ''}">
@@ -1386,10 +1386,10 @@ function renderCustomersManagement(config, customers, bookings) {
                                 
                                 <td class="p-4 text-center">
                                     <div class="font-bold text-purple-600">${acc.points} 分</div>
-                                    ${lateCount > 0 
-                                        ? `<div class="text-[10px] text-red-500 font-bold bg-red-50 px-2 py-0.5 rounded mt-1 inline-block">迟到 ${lateCount} 次</div>` 
-                                        : `<div class="text-[10px] text-green-500 mt-1 opacity-60">记录良好</div>`
-                                    }
+                                    ${lateCount > 0
+                ? `<div class="text-[10px] text-red-500 font-bold bg-red-50 px-2 py-0.5 rounded mt-1 inline-block">迟到 ${lateCount} 次</div>`
+                : `<div class="text-[10px] text-green-500 mt-1 opacity-60">记录良好</div>`
+            }
                                 </td>
                                 
                                 <td class="p-4 text-right flex justify-end gap-2">
@@ -1436,12 +1436,12 @@ function renderSettings(config) {
                 </h2>
                 
                 ${(() => {
-                    const currentVersion = 'v1.3.6 正式版';
-                    // 检查是否已读
-                    const lastSeen = localStorage.getItem('BeautyLoop_last_seen_version');
-                    const showBadge = lastSeen !== currentVersion;
+            const currentVersion = 'v1.3.6 正式版';
+            // 检查是否已读
+            const lastSeen = localStorage.getItem('BeautyLoop_last_seen_version');
+            const showBadge = lastSeen !== currentVersion;
 
-                    return `
+            return `
                     <button onclick="handleVersionClick(elementSdk.config, '${currentVersion}')" 
                         class="px-3 py-1 rounded-full bg-pink-100 text-pink-600 text-xs font-bold hover:bg-pink-200 transition-colors cursor-pointer relative group">
                         ${currentVersion}
@@ -1458,7 +1458,7 @@ function renderSettings(config) {
                         </div>
                     </button>
                     `;
-                })()}
+        })()}
                 </div>
             
             <form id="discountSettingsForm">
@@ -1621,10 +1621,10 @@ function renderSettings(config) {
                         <input type="checkbox" id="enableRewards" ${discountSettings.enable_rewards !== false ? 'checked' : ''} class="w-5 h-5 accent-purple-500">
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                        <div><label class="block text-xs font-bold text-purple-600">铜牌积分/折扣</label><div class="flex gap-2"><input type="number" id="bronzePoints" value="${discountSettings.bronze_points||0}" class="w-1/2 p-2 rounded border"><input type="number" id="bronzeDiscount" value="${discountSettings.bronze_discount||0}" class="w-1/2 p-2 rounded border"></div></div>
-                        <div><label class="block text-xs font-bold text-gray-600">银牌积分/折扣</label><div class="flex gap-2"><input type="number" id="silverPoints" value="${discountSettings.silver_points||100}" class="w-1/2 p-2 rounded border"><input type="number" id="silverDiscount" value="${discountSettings.silver_discount||5}" class="w-1/2 p-2 rounded border"></div></div>
-                        <div><label class="block text-xs font-bold text-yellow-600">金牌积分/折扣</label><div class="flex gap-2"><input type="number" id="goldPoints" value="${discountSettings.gold_points||300}" class="w-1/2 p-2 rounded border"><input type="number" id="goldDiscount" value="${discountSettings.gold_discount||10}" class="w-1/2 p-2 rounded border"></div></div>
-                        <div><label class="block text-xs font-bold text-cyan-600">白金积分/折扣</label><div class="flex gap-2"><input type="number" id="platinumPoints" value="${discountSettings.platinum_points||600}" class="w-1/2 p-2 rounded border"><input type="number" id="platinumDiscount" value="${discountSettings.platinum_discount||15}" class="w-1/2 p-2 rounded border"></div></div>
+                        <div><label class="block text-xs font-bold text-purple-600">铜牌积分/折扣</label><div class="flex gap-2"><input type="number" id="bronzePoints" value="${discountSettings.bronze_points || 0}" class="w-1/2 p-2 rounded border"><input type="number" id="bronzeDiscount" value="${discountSettings.bronze_discount || 0}" class="w-1/2 p-2 rounded border"></div></div>
+                        <div><label class="block text-xs font-bold text-gray-600">银牌积分/折扣</label><div class="flex gap-2"><input type="number" id="silverPoints" value="${discountSettings.silver_points || 100}" class="w-1/2 p-2 rounded border"><input type="number" id="silverDiscount" value="${discountSettings.silver_discount || 5}" class="w-1/2 p-2 rounded border"></div></div>
+                        <div><label class="block text-xs font-bold text-yellow-600">金牌积分/折扣</label><div class="flex gap-2"><input type="number" id="goldPoints" value="${discountSettings.gold_points || 300}" class="w-1/2 p-2 rounded border"><input type="number" id="goldDiscount" value="${discountSettings.gold_discount || 10}" class="w-1/2 p-2 rounded border"></div></div>
+                        <div><label class="block text-xs font-bold text-cyan-600">白金积分/折扣</label><div class="flex gap-2"><input type="number" id="platinumPoints" value="${discountSettings.platinum_points || 600}" class="w-1/2 p-2 rounded border"><input type="number" id="platinumDiscount" value="${discountSettings.platinum_discount || 15}" class="w-1/2 p-2 rounded border"></div></div>
                     </div>
                     <div>
                         <label class="block mb-1 text-xs font-bold text-gray-600">积分兑换比 (10 积分 = ? RM)</label>
@@ -1711,7 +1711,7 @@ function renderSettings(config) {
 function renderCustomerView(config, services, bookings, posts) {
     if (currentView === 'mybookings' && loggedInCustomerName) {
         return renderMyBookings(config, bookings);
-    } else if (currentView === 'myorders' && loggedInCustomerName) { 
+    } else if (currentView === 'myorders' && loggedInCustomerName) {
         return renderMyOrdersPage(config); // 👇 新增这个页面函数
     } else if (currentView === 'history' && loggedInCustomerName) { // ✅ 新增这行
         return renderHistoryPage(config);
@@ -1719,14 +1719,14 @@ function renderCustomerView(config, services, bookings, posts) {
         return renderProfile(config, bookings);
     }
 
-    const customerAccount = loggedInCustomerName ? 
+    const customerAccount = loggedInCustomerName ?
         getDataByType('customer_account').find(acc => acc.username === loggedInCustomerName) : null;
     const memberDiscount = customerAccount ? getMembershipDiscount(customerAccount.membershipLevel) : 0;
     const products = getDataByType('product');
-    
+
     const settings = getDiscountSettings();
     const isShopEnabled = settings.enable_shop !== false;
-    
+
     const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
     return `
@@ -1751,13 +1751,13 @@ function renderCustomerView(config, services, bookings, posts) {
             ` : `
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
                     ${services.map(service => {
-                        const rating = getServiceRating(service.id);
-                        const ratingCount = getDataByType('rating').filter(r => r.serviceId === service.id).length;
-                        const originalPrice = service.price;
-                        const discountedPrice = memberDiscount > 0 ? (originalPrice * (1 - memberDiscount)).toFixed(2) : null;
-                        const displayImage = service.imageUrl || './assets/default_eye.png';
+        const rating = getServiceRating(service.id);
+        const ratingCount = getDataByType('rating').filter(r => r.serviceId === service.id).length;
+        const originalPrice = service.price;
+        const discountedPrice = memberDiscount > 0 ? (originalPrice * (1 - memberDiscount)).toFixed(2) : null;
+        const displayImage = service.imageUrl || './assets/default_eye.png';
 
-                        return `
+        return `
                             <div class="service-card group" style="background: rgba(255, 255, 255, 0.95); border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
                                 <div style="height: 240px; overflow: hidden;">
                                     <img src="${displayImage}" 
@@ -1790,7 +1790,7 @@ function renderCustomerView(config, services, bookings, posts) {
                                 </div>
                             </div>
                         `;
-                    }).join('')}
+    }).join('')}
                 </div>
             `}
             
@@ -1800,8 +1800,8 @@ function renderCustomerView(config, services, bookings, posts) {
                 </h2>
                 <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-16">
                     ${products.map(product => {
-                        const displayImage = product.imageUrl || './assets/default_eye.png';
-                        return `
+        const displayImage = product.imageUrl || './assets/default_eye.png';
+        return `
                             <div class="product-card group" data-id="${product.id}" style="background: rgba(255, 255, 255, 0.95); border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1); cursor: pointer;">
                                 <div style="height: 180px; overflow: hidden; background: #f9fafb;"> 
                                     <img src="${displayImage}" 
@@ -1831,7 +1831,7 @@ function renderCustomerView(config, services, bookings, posts) {
                                 </div>
                             </div>
                         `;
-                    }).join('')}
+    }).join('')}
                 </div>
             ` : ''}
 
@@ -1889,8 +1889,8 @@ function renderCustomerView(config, services, bookings, posts) {
 // ==========================================
 function renderMyBookings(config, bookings) {
     // 1. 数据准备 (包含 pending 和 serving)
-    const myPendingBookings = bookings.filter(b => 
-        b.customerName === loggedInCustomerName && 
+    const myPendingBookings = bookings.filter(b =>
+        b.customerName === loggedInCustomerName &&
         (b.status === 'pending' || b.status === 'serving')
     ).sort((a, b) => {
         // 正在服务的排最前
@@ -1900,8 +1900,8 @@ function renderMyBookings(config, bookings) {
     });
 
     const allOrders = getDataByType('order');
-    const myPendingOrders = allOrders.filter(o => 
-        o.customerName === loggedInCustomerName && 
+    const myPendingOrders = allOrders.filter(o =>
+        o.customerName === loggedInCustomerName &&
         (o.status === 'pending' || o.status === 'pending_payment' || o.status === 'paid_verify')
     ).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
@@ -1916,11 +1916,11 @@ function renderMyBookings(config, bookings) {
 
             <div class="flex border-b border-gray-200 mb-6">
                 <button onclick="window.pendingTab='booking'; renderApp()" 
-                    class="flex-1 pb-3 font-bold transition-colors ${window.pendingTab==='booking' ? 'text-pink-600 border-b-2 border-pink-600' : 'text-gray-400'}">
+                    class="flex-1 pb-3 font-bold transition-colors ${window.pendingTab === 'booking' ? 'text-pink-600 border-b-2 border-pink-600' : 'text-gray-400'}">
                     预约服务 ${myPendingBookings.length > 0 ? `(${myPendingBookings.length})` : ''}
                 </button>
                 <button onclick="window.pendingTab='order'; renderApp()" 
-                    class="flex-1 pb-3 font-bold transition-colors ${window.pendingTab==='order' ? 'text-pink-600 border-b-2 border-pink-600' : 'text-gray-400'}">
+                    class="flex-1 pb-3 font-bold transition-colors ${window.pendingTab === 'order' ? 'text-pink-600 border-b-2 border-pink-600' : 'text-gray-400'}">
                     商品订单 ${myPendingOrders.length > 0 ? `(${myPendingOrders.length})` : ''}
                 </button>
             </div>
@@ -1937,10 +1937,10 @@ function renderMyBookings(config, bookings) {
                     ` : `
                         <div class="space-y-4">
                             ${myPendingBookings.map(booking => {
-                                const isServing = booking.status === 'serving';
-                                const delay = booking.delayMinutes || 0;
-                                
-                                return `
+        const isServing = booking.status === 'serving';
+        const delay = booking.delayMinutes || 0;
+
+        return `
                                 <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100 relative overflow-hidden group 
                                     ${isServing ? 'ring-2 ring-green-500 ring-offset-1' : ''}">
                                     
@@ -1980,7 +1980,7 @@ function renderMyBookings(config, bookings) {
                                     </div>
                                 </div>
                             `;
-                            }).join('')}
+    }).join('')}
                         </div>
                     `}
                 </div>
@@ -1999,10 +1999,10 @@ function renderMyBookings(config, bookings) {
                                         <span class="text-xs text-gray-400">
                                             ${new Date(order.createdAt).toLocaleDateString()}
                                         </span>
-                                        ${order.status === 'pending_payment' ? `<span class="text-xs px-2 py-1 rounded-full bg-red-100 text-red-600 font-bold">待支付</span>` : 
-                                          order.paymentStatus === 'paid_verify' ? `<span class="text-xs px-2 py-1 rounded-full bg-orange-100 text-orange-600 font-bold">审核中</span>` :
-                                          `<span class="text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-600 font-bold">待发货</span>`
-                                        }
+                                        ${order.status === 'pending_payment' ? `<span class="text-xs px-2 py-1 rounded-full bg-red-100 text-red-600 font-bold">待支付</span>` :
+            order.paymentStatus === 'paid_verify' ? `<span class="text-xs px-2 py-1 rounded-full bg-orange-100 text-orange-600 font-bold">审核中</span>` :
+                `<span class="text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-600 font-bold">待发货</span>`
+        }
                                     </div>
 
                                     <div class="bg-gray-50 p-3 rounded-lg mb-3">
@@ -2018,8 +2018,8 @@ function renderMyBookings(config, bookings) {
                                     </div>
 
                                     <div class="text-right flex justify-end gap-2">
-                                         ${order.status === 'pending_payment' ? 
-                                            `<button onclick="window.showUploadProofModal(getDataByType('order').find(o => o.id === '${order.id}'))" class="px-3 py-1 rounded-lg text-xs bg-pink-500 text-white font-bold shadow-sm">去支付</button>` : ''}
+                                         ${order.status === 'pending_payment' ?
+            `<button onclick="window.showUploadProofModal(getDataByType('order').find(o => o.id === '${order.id}'))" class="px-3 py-1 rounded-lg text-xs bg-pink-500 text-white font-bold shadow-sm">去支付</button>` : ''}
                                          
                                          <button class="cancelOrderBtn px-3 py-1 rounded-lg text-xs border border-red-200 text-red-500 hover:bg-red-50 font-bold" data-id="${order.id}">
                                             取消订单
@@ -2042,8 +2042,8 @@ function renderMyBookings(config, bookings) {
 function renderMyOrdersPage(config) {
     const allOrders = getDataByType('order');
     // 过滤出当前用户的订单，且必须是包含商品 (items) 的订单
-    const myOrders = allOrders.filter(o => 
-        o.customerName === loggedInCustomerName && 
+    const myOrders = allOrders.filter(o =>
+        o.customerName === loggedInCustomerName &&
         o.items && o.items.some(i => i.type === 'product')
     ).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)); // 最新在最前
 
@@ -2062,39 +2062,39 @@ function renderMyOrdersPage(config) {
             ` : `
                 <div class="space-y-6">
                     ${myOrders.map(order => {
-                        // 状态翻译
-                        let statusBadge = '';
-                        let actionsHtml = '';
-                        
-                        if (order.status === 'pending_payment') {
-                            statusBadge = `<span class="bg-red-100 text-red-600 px-3 py-1 rounded-full text-xs font-bold animate-pulse">💳 待支付</span>`;
-                            actionsHtml = `
+        // 状态翻译
+        let statusBadge = '';
+        let actionsHtml = '';
+
+        if (order.status === 'pending_payment') {
+            statusBadge = `<span class="bg-red-100 text-red-600 px-3 py-1 rounded-full text-xs font-bold animate-pulse">💳 待支付</span>`;
+            actionsHtml = `
                                 <button onclick="window.showUploadProofModal(getDataByType('order').find(o => o.id === '${order.id}'))" 
                                     class="w-full bg-pink-500 text-white py-2 rounded-lg text-xs font-bold shadow-md hover:bg-pink-600 mt-3">
                                     📤 上传付款凭证 (Pay Now)
                                 </button>
                                 <button class="w-full mt-2 text-gray-400 text-xs hover:text-red-500" onclick="alert('取消订单功能开发中...')">取消订单</button>
                             `;
-                        }
-                        // 🆕 已提交凭证，待商家确认
-                        else if (order.paymentStatus === 'paid_verify') {
-                            statusBadge = `<span class="bg-orange-100 text-orange-600 px-3 py-1 rounded-full text-xs font-bold">🕵️ 待商家核实</span>`;
-                            actionsHtml = `
+        }
+        // 🆕 已提交凭证，待商家确认
+        else if (order.paymentStatus === 'paid_verify') {
+            statusBadge = `<span class="bg-orange-100 text-orange-600 px-3 py-1 rounded-full text-xs font-bold">🕵️ 待商家核实</span>`;
+            actionsHtml = `
                                 <div class="mt-2 p-2 bg-orange-50 rounded border border-orange-100 text-xs text-orange-700">
                                     <p><strong>流水号:</strong> ${order.proofRef || '-'}</p>
                                     <p>您的付款正在审核中，请耐心等待。</p>
                                 </div>
                             `;
-                        }
-                        // 📅 待处理
-                        if (order.status === 'pending') {
-                            statusBadge = `<span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-xs font-bold">⏳ 等待商家发货</span>`;
-                            actionsHtml = `<p class="text-xs text-gray-400 mt-2">商家正在配货中...</p>`;
-                        } 
-                        // 🚚 已发货 / 已完成 (但顾客还没确认收货)
-                        else if (order.status === 'completed' && !order.customerReceived) {
-                            statusBadge = `<span class="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-xs font-bold">🚚 商家已发货</span>`;
-                            actionsHtml = `
+        }
+        // 📅 待处理
+        if (order.status === 'pending') {
+            statusBadge = `<span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-xs font-bold">⏳ 等待商家发货</span>`;
+            actionsHtml = `<p class="text-xs text-gray-400 mt-2">商家正在配货中...</p>`;
+        }
+        // 🚚 已发货 / 已完成 (但顾客还没确认收货)
+        else if (order.status === 'completed' && !order.customerReceived) {
+            statusBadge = `<span class="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-xs font-bold">🚚 商家已发货</span>`;
+            actionsHtml = `
                                 <div class="flex gap-2 mt-3">
                                     <button onclick="window.confirmOrderReceived('${order.id}')" class="flex-1 bg-green-500 text-white py-2 rounded-lg text-xs font-bold shadow-md hover:bg-green-600">
                                         ✅ 我已收到货
@@ -2104,30 +2104,30 @@ function renderMyOrdersPage(config) {
                                     </button>
                                 </div>
                             `;
-                        }
-                        // ✅ 交易成功 (双向确认)
-                        else if (order.status === 'completed' && order.customerReceived) {
-                            statusBadge = `<span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold">🌟 交易成功</span>`;
-                            actionsHtml = `<p class="text-xs text-green-600 mt-2 font-bold">感谢您的购买！</p>`;
-                        }
-                        // 💸 退款中
-                        else if (order.status === 'refund_requested') {
-                            statusBadge = `<span class="bg-red-100 text-red-600 px-3 py-1 rounded-full text-xs font-bold">⚠️ 退款申请中</span>`;
-                            actionsHtml = `<p class="text-xs text-red-400 mt-2">请等待商家联系您处理售后。</p>`;
-                        }
-                        else if (order.status === 'cancelled') {
-                            statusBadge = `<span class="bg-gray-100 text-gray-500 px-3 py-1 rounded-full text-xs font-bold">🚫 已取消</span>`;
-                        }
+        }
+        // ✅ 交易成功 (双向确认)
+        else if (order.status === 'completed' && order.customerReceived) {
+            statusBadge = `<span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold">🌟 交易成功</span>`;
+            actionsHtml = `<p class="text-xs text-green-600 mt-2 font-bold">感谢您的购买！</p>`;
+        }
+        // 💸 退款中
+        else if (order.status === 'refund_requested') {
+            statusBadge = `<span class="bg-red-100 text-red-600 px-3 py-1 rounded-full text-xs font-bold">⚠️ 退款申请中</span>`;
+            actionsHtml = `<p class="text-xs text-red-400 mt-2">请等待商家联系您处理售后。</p>`;
+        }
+        else if (order.status === 'cancelled') {
+            statusBadge = `<span class="bg-gray-100 text-gray-500 px-3 py-1 rounded-full text-xs font-bold">🚫 已取消</span>`;
+        }
 
-                        // 物流信息
-                        const trackingInfo = order.trackingNumber 
-                            ? `<div class="mt-3 p-2 bg-blue-50 border border-blue-100 rounded-lg text-xs text-blue-800 flex justify-between items-center">
+        // 物流信息
+        const trackingInfo = order.trackingNumber
+            ? `<div class="mt-3 p-2 bg-blue-50 border border-blue-100 rounded-lg text-xs text-blue-800 flex justify-between items-center">
                                  <span>🚚 物流单号: <strong class="select-all font-mono text-sm">${order.trackingNumber}</strong></span>
                                  <button onclick="navigator.clipboard.writeText('${order.trackingNumber}'); showToast('已复制单号')" class="text-blue-400 hover:text-blue-600">📋</button>
-                               </div>` 
-                            : '';
+                               </div>`
+            : '';
 
-                        return `
+        return `
                             <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 relative overflow-hidden">
                                 <div class="flex justify-between items-start mb-3 border-b border-gray-50 pb-2">
                                     <div class="text-xs text-gray-400">
@@ -2155,7 +2155,7 @@ function renderMyOrdersPage(config) {
                                 ${actionsHtml}
                             </div>
                         `;
-                    }).join('')}
+    }).join('')}
                 </div>
             `}
         </div>
@@ -2164,11 +2164,11 @@ function renderMyOrdersPage(config) {
 
 // 辅助函数：顾客确认收货 & 申请退款
 window.confirmOrderReceived = async (orderId) => {
-    if(!confirm("确认您已经收到商品且无误吗？确认后将无法退款。")) return;
-    
+    if (!confirm("确认您已经收到商品且无误吗？确认后将无法退款。")) return;
+
     const orders = getDataByType('order');
     const order = orders.find(o => o.id === orderId);
-    if(order) {
+    if (order) {
         await updateRecord(order, { customerReceived: true, receivedAt: new Date().toISOString() });
         showToast('🎉 交易完成！');
         renderApp();
@@ -2177,11 +2177,11 @@ window.confirmOrderReceived = async (orderId) => {
 
 window.requestOrderRefund = async (orderId) => {
     const reason = prompt("请输入退款/售后原因：");
-    if(!reason) return;
+    if (!reason) return;
 
     const orders = getDataByType('order');
     const order = orders.find(o => o.id === orderId);
-    if(order) {
+    if (order) {
         await updateRecord(order, { status: 'refund_requested', refundReason: reason });
         showToast('✅ 申请已提交，请等待商家联系');
         renderApp();
@@ -2196,7 +2196,7 @@ function renderProfile(config, bookings) {
     if (!customerAccount) return '';
 
     const currentAvatar = customerAccount.avatar || customerAccount.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(loggedInCustomerName)}&background=random&color=fff&size=150`;
-    
+
     return `
         <div class="space-y-6 max-w-md mx-auto pb-20">
             <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center text-center">
@@ -2258,7 +2258,7 @@ function renderProfile(config, bookings) {
 
 function attachEventListeners(config, services, bookings, posts) {
     // === 0. 菜单控制 (补回) ===
-    
+
     // 打开菜单 (Menu Button)
     document.getElementById('menuBtn')?.addEventListener('click', () => {
         showMenu = true;
@@ -2290,12 +2290,12 @@ function attachEventListeners(config, services, bookings, posts) {
         btn.addEventListener('click', () => {
             // 1. 清除登录缓存 (防止刷新自动登录)
             localStorage.removeItem('gembrow_session');
-            
+
             // 2. 重置状态
             loggedInCustomerName = null;
             currentMode = 'login'; // 回到登录页
             showMenu = false;      // 关闭菜单
-            
+
             // 3. 刷新
             renderApp();
             showToast('已退出登录');
@@ -2307,7 +2307,7 @@ function attachEventListeners(config, services, bookings, posts) {
         currentView = 'mybookings';
         renderApp();
     });
-    
+
     document.getElementById('homeBtn')?.addEventListener('click', (e) => {
         e.preventDefault();
         currentView = 'home';
@@ -2321,7 +2321,7 @@ function attachEventListeners(config, services, bookings, posts) {
         if (username === ownerCredentials.username && phone === ownerCredentials.password) {
             isOwner = true;
             loggedInCustomerName = null;
-            currentView = 'manage'; 
+            currentView = 'manage';
         } else {
             isOwner = false;
             loggedInCustomerName = username;
@@ -2394,7 +2394,7 @@ function attachEventListeners(config, services, bookings, posts) {
         // 我们传入一个特殊的 serviceName 叫 "⛔ 休息/锁定"
         // 价格 0，时长可以让老板自己填 (这里简化为默认 60分钟，老板可以在弹窗里改)
         // 更好的做法是专门写个 showBlockTimeModal，但为了省事，我们可以直接伪造一个服务
-        
+
         showBlockTimeModal(config); // 👇 下面有这个新函数
     });
 
@@ -2402,7 +2402,7 @@ function attachEventListeners(config, services, bookings, posts) {
     document.getElementById('addServiceBtn')?.addEventListener('click', () => {
         showServiceModal(config);
     });
-    
+
     document.querySelectorAll('.editServiceBtn').forEach(btn => {
         btn.addEventListener('click', () => {
             const s = services.find(i => i.id === btn.dataset.id);
@@ -2481,7 +2481,7 @@ function attachEventListeners(config, services, bookings, posts) {
     });
 
     // === 6. 订单/预约处理 ===
-    
+
     // 完成预约 (改为弹出日期选择框)
     document.querySelectorAll('.completeBookingBtn').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -2496,8 +2496,8 @@ function attachEventListeners(config, services, bookings, posts) {
     document.querySelectorAll('.cancelBookingBtn').forEach(btn => {
         btn.addEventListener('click', () => {
             const b = bookings.find(i => i.id === btn.dataset.id);
-            if (b) showConfirmModal(config, "确定取消此预约？", async () => updateRecord(b, { 
-                status: 'cancelled', 
+            if (b) showConfirmModal(config, "确定取消此预约？", async () => updateRecord(b, {
+                status: 'cancelled',
                 cancelledAt: new Date().toISOString() // 👈 加上这个，后悔药才能生效！
             }));
         });
@@ -2543,17 +2543,17 @@ function attachEventListeners(config, services, bookings, posts) {
     });
 
     // === 6. Logo 上传事件 (已升级：Logo 圆形，QR 方形) ===
-    document.getElementById('logoLoginInput')?.addEventListener('change', function(e) {
+    document.getElementById('logoLoginInput')?.addEventListener('change', function (e) {
         // 👇 最后一个参数 true 代表圆形
         handleFileWithCrop(e.target.files[0], 'logoLoginUrl', 'loginLogoPreviewImg', 'loginLogoPlaceholder', true);
     });
 
-    document.getElementById('logoHeaderInput')?.addEventListener('change', function(e) {
+    document.getElementById('logoHeaderInput')?.addEventListener('change', function (e) {
         // 👇 最后一个参数 true 代表圆形
         handleFileWithCrop(e.target.files[0], 'logoHeaderUrl', 'headerLogoPreviewImg', 'headerLogoPlaceholder', true);
     });
 
-    document.getElementById('tngQrInput')?.addEventListener('change', function(e) {
+    document.getElementById('tngQrInput')?.addEventListener('change', function (e) {
         // 👇 ⚠️ 二维码必须是方形 (false)，切圆了会扫不到
         handleFileWithCrop(e.target.files[0], 'tngQrUrl', 'tngQrPreview', 'tngQrPlaceholder', false);
     });
@@ -2561,24 +2561,24 @@ function attachEventListeners(config, services, bookings, posts) {
     // === 7. 设置保存 ===
     document.getElementById('discountSettingsForm')?.addEventListener('submit', async (e) => {
         e.preventDefault();
-        
+
         // 获取提交按钮来显示“保存中...”
         const submitBtn = e.target.querySelector('button[type="submit"]');
         const originalText = submitBtn.innerText;
         submitBtn.innerText = "💾 保存中...";
-        
+
         try {
             // 1. 保存管理员账号
             const newAdminUser = document.getElementById('adminUsername').value.trim();
             const newAdminPass = document.getElementById('adminPassword').value.trim();
-            
+
             // ... (管理员账号保存逻辑保持不变) ...
             let rawData = JSON.parse(localStorage.getItem('gembrow_data') || '[]');
             rawData = rawData.filter(item => item.type !== 'owner_credentials');
-            rawData.push({ 
-                id: Date.now().toString(), 
-                type: 'owner_credentials', 
-                username: newAdminUser, 
+            rawData.push({
+                id: Date.now().toString(),
+                type: 'owner_credentials',
+                username: newAdminUser,
                 password: newAdminPass,
                 createdAt: new Date().toISOString()
             });
@@ -2596,10 +2596,10 @@ function attachEventListeners(config, services, bookings, posts) {
                 ssm_number: document.getElementById('ssmNumber').value.trim(),
                 shop_address: document.getElementById('shopAddress').value.trim(),
                 wa_number: document.getElementById('waNumber').value,
-                
+
                 // 👇👇👇 关键：确保这行存在，才能保存 TNG 图片 👇👇👇
-                tng_qr_url: document.getElementById('tngQrUrl').value, 
-                
+                tng_qr_url: document.getElementById('tngQrUrl').value,
+
                 logo_login: document.getElementById('logoLoginUrl').value || '',
                 logo_header: document.getElementById('logoHeaderUrl').value || '',
                 map_link: document.getElementById('mapLink').value.trim(),
@@ -2623,7 +2623,7 @@ function attachEventListeners(config, services, bookings, posts) {
                 platinum_discount: parseInt(document.getElementById('platinumDiscount').value) || 15,
                 points_to_rm_rate: parseInt(document.getElementById('pointsToRmRate').value) || 10
             };
-            
+
             if (currentSettings.id) {
                 await updateRecord(currentSettings, newSettings);
             } else {
@@ -2634,7 +2634,7 @@ function attachEventListeners(config, services, bookings, posts) {
             allData = loadDb();
             renderApp();
             if (typeof initGlobalWidgets === 'function') initGlobalWidgets();
-            
+
         } catch (error) {
             showToast('❌ 保存失败：' + error.message);
             console.error(error);
@@ -2657,14 +2657,14 @@ function attachEventListeners(config, services, bookings, posts) {
     document.querySelectorAll('.addToCartBtn').forEach(btn => {
         btn.addEventListener('click', (e) => {
             e.stopPropagation();
-            if(typeof addToCart === 'function') addToCart(btn.dataset.id);
+            if (typeof addToCart === 'function') addToCart(btn.dataset.id);
         });
     });
 
     document.getElementById('cartFab')?.addEventListener('click', () => {
-        if(typeof showCartModal === 'function') showCartModal(config);
+        if (typeof showCartModal === 'function') showCartModal(config);
     });
-    
+
     document.querySelectorAll('.product-card').forEach(card => {
         card.addEventListener('click', () => {
             const products = getDataByType('product');
@@ -2672,7 +2672,7 @@ function attachEventListeners(config, services, bookings, posts) {
             if (p && typeof showProductDetailModal === 'function') showProductDetailModal(config, p);
         });
     });
-    
+
     document.getElementById('searchInput')?.addEventListener('input', (e) => {
         searchQuery = e.target.value;
         renderApp();
@@ -2806,7 +2806,7 @@ function showEditCustomerModal(config, customerId) {
 
     const modal = document.createElement('div');
     modal.className = 'modal-backdrop fixed inset-0 flex items-center justify-center z-50 p-4';
-    
+
     modal.innerHTML = `
         <div style="background: rgba(255, 255, 255, 0.95); padding: 32px; border-radius: 16px; max-width: 500px; width: 100%; border: 3px solid ${config.primary_action_color}; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
             <h3 class="mb-6 text-xl font-bold" style="color: ${config.primary_action_color};">
@@ -2836,10 +2836,10 @@ function showEditCustomerModal(config, customerId) {
                 <div style="display: ${settings.enable_membership ? 'block' : 'none'}">
                     <label class="block mb-1 text-xs font-bold text-gray-500">会员等级 (人工调整)</label>
                     <select id="editCustLevel" class="w-full px-4 py-3 rounded-lg border-2 font-bold text-gray-700 bg-white">
-                        <option value="bronze" ${customer.membershipLevel==='bronze'?'selected':''}>🥉 铜牌 (Bronze)</option>
-                        <option value="silver" ${customer.membershipLevel==='silver'?'selected':''}>🥈 银牌 (Silver)</option>
-                        <option value="gold" ${customer.membershipLevel==='gold'?'selected':''}>🥇 金牌 (Gold)</option>
-                        <option value="platinum" ${customer.membershipLevel==='platinum'?'selected':''}>💎 铂金 (Platinum)</option>
+                        <option value="bronze" ${customer.membershipLevel === 'bronze' ? 'selected' : ''}>🥉 铜牌 (Bronze)</option>
+                        <option value="silver" ${customer.membershipLevel === 'silver' ? 'selected' : ''}>🥈 银牌 (Silver)</option>
+                        <option value="gold" ${customer.membershipLevel === 'gold' ? 'selected' : ''}>🥇 金牌 (Gold)</option>
+                        <option value="platinum" ${customer.membershipLevel === 'platinum' ? 'selected' : ''}>💎 铂金 (Platinum)</option>
                     </select>
                 </div>
 
@@ -2866,7 +2866,7 @@ function showEditCustomerModal(config, customerId) {
 
     document.getElementById('editCustomerForm').addEventListener('submit', async (e) => {
         e.preventDefault();
-        
+
         const updates = {
             phone: cleanPhoneNumber(document.getElementById('editCustPhone').value),
             email: document.getElementById('editCustEmail').value,
@@ -2967,9 +2967,9 @@ function showServiceModal(config) {
             </form>
         </div>
     `;
-    
+
     document.body.appendChild(modal);
-    
+
     // 图片处理逻辑
     const dropZone = document.getElementById('dropZone');
     const fileInput = document.getElementById('fileInput');
@@ -2999,12 +2999,12 @@ function showServiceModal(config) {
                 // imagePreview 是预览图变量名
                 if (typeof imageInput !== 'undefined') imageInput.value = base64;
                 if (typeof updatePreview === 'function') {
-                    updatePreview(base64); 
+                    updatePreview(base64);
                 } else if (typeof imagePreview !== 'undefined') {
                     // 兼容旧逻辑
                     imagePreview.src = base64;
                     imagePreview.style.display = 'block';
-                    if(typeof uploadText !== 'undefined') uploadText.style.display = 'none';
+                    if (typeof uploadText !== 'undefined') uploadText.style.display = 'none';
                 }
             });
         }
@@ -3030,7 +3030,7 @@ function showServiceModal(config) {
             showToast('图片处理中...');
             // 👇 服务图可以稍微大一点，最大宽 800px
             const compressedBase64 = await compressImage(file, 800, 0.7);
-            
+
             serviceImageInput.value = compressedBase64;
             imagePreview.src = compressedBase64;
             imagePreview.style.display = 'block';
@@ -3042,7 +3042,7 @@ function showServiceModal(config) {
 
     document.getElementById('serviceForm').addEventListener('submit', async (e) => {
         e.preventDefault();
-        
+
         const success = await createRecord({
             type: 'service',
             name: document.getElementById('serviceName').value,
@@ -3051,16 +3051,16 @@ function showServiceModal(config) {
             description: document.getElementById('serviceDescription').value,
             imageUrl: document.getElementById('serviceImage').value
         });
-        
+
         if (success) {
             modal.remove();
         }
     });
-    
+
     document.getElementById('cancelServiceBtn').addEventListener('click', () => {
         modal.remove();
     });
-    
+
     modal.addEventListener('click', (e) => {
         if (e.target === modal) {
             modal.remove();
@@ -3152,11 +3152,11 @@ function showBookingModal(config, serviceId, serviceName, servicePrice) {
 
     // 获取服务详情
     const service = getDataByType('service').find(s => s.id === serviceId);
-    const duration = service ? (service.duration || 60) : 60; 
+    const duration = service ? (service.duration || 60) : 60;
 
     const modal = document.createElement('div');
     modal.className = 'modal-backdrop fixed inset-0 flex items-center justify-center z-50 p-4';
-    
+
     modal.innerHTML = `
         <div style="background: rgba(255, 255, 255, 0.95); padding: 24px; border-radius: 16px; max-width: 500px; width: 100%; border: 3px solid ${config.primary_action_color}; box-shadow: 0 20px 60px rgba(0,0,0,0.3); max-height: 85vh; overflow-y: auto;">
             <h3 class="mb-2 text-center" style="font-size: ${config.font_size * 1.5}px; font-weight: 700; color: ${config.primary_action_color};">
@@ -3250,24 +3250,24 @@ function showBookingModal(config, serviceId, serviceName, servicePrice) {
     // 提交逻辑
     document.getElementById('bookingForm').addEventListener('submit', async (e) => {
         e.preventDefault();
-        
+
         // 1. 先获取基础信息
         const finalName = document.getElementById('customerName').value;
         const targetDate = document.getElementById('appointmentDate').value;
         const targetTime = document.getElementById('appointmentTime').value;
-        
+
         // --- 防撞车检测 (保持你原有的逻辑，不要删) ---
         const [h, m] = targetTime.split(':').map(Number);
         const newStart = h * 60 + m;
         const newEnd = newStart + duration;
-        const existingBookings = getDataByType('booking').filter(b => 
+        const existingBookings = getDataByType('booking').filter(b =>
             b.appointmentDate === targetDate && b.status !== 'cancelled'
         );
         let hasConflict = false;
         for (let b of existingBookings) {
             const [bh, bm] = b.appointmentTime.split(':').map(Number);
             const existStart = bh * 60 + bm;
-            const existDuration = b.duration || 60; 
+            const existDuration = b.duration || 60;
             const existEnd = existStart + existDuration;
             if (newStart < existEnd && newEnd > existStart) {
                 hasConflict = true;
@@ -3285,13 +3285,13 @@ function showBookingModal(config, serviceId, serviceName, servicePrice) {
         const pointsUsed = (customerAccount && showRewards) ? (parseInt(document.getElementById('pointsToUse')?.value) || 0) : 0;
         const basePrice = parseFloat(servicePrice); // 确保是数字
         const discountAmount = pointsUsed / pointsToRmRate;
-        
+
         // 这就是 finalPriceNum 的出生地：
         const finalPriceNum = Math.max(0, basePrice - discountAmount);
         // 👆👆👆【重点结束】👆👆👆
 
         // 生成流水单号
-        const newReceiptNo = generateReceiptNumber(); 
+        const newReceiptNo = generateReceiptNumber();
 
         const success = await createRecord({
             type: 'booking',
@@ -3304,9 +3304,9 @@ function showBookingModal(config, serviceId, serviceName, servicePrice) {
             appointmentTime: targetTime,
             duration: duration,
             status: 'pending',
-            
+
             // 现在这里就不会报错了，因为上面已经定义了 finalPriceNum
-            totalAmount: parseFloat(finalPriceNum.toFixed(2)), 
+            totalAmount: parseFloat(finalPriceNum.toFixed(2)),
             points_used: pointsUsed
         });
 
@@ -3314,8 +3314,8 @@ function showBookingModal(config, serviceId, serviceName, servicePrice) {
             if (customerAccount && pointsUsed > 0) {
                 await updateRecord(customerAccount, { points: customerAccount.points - pointsUsed });
             }
-            
-            modal.remove(); 
+
+            modal.remove();
 
             // 呼叫粉色门票
             const newBooking = {
@@ -3326,9 +3326,9 @@ function showBookingModal(config, serviceId, serviceName, servicePrice) {
                 appointmentTime: targetTime,
                 customerName: finalName
             };
-            
+
             if (typeof showTicketModal === 'function') {
-                showTicketModal(config, newBooking); 
+                showTicketModal(config, newBooking);
             }
         }
     });
@@ -3342,11 +3342,11 @@ function showRatingModal(config, booking) {
     // 1. 【核心修复】强制重新获取一次最新数据，防止缓存导致能重复评价
     const allRatings = getDataByType('rating'); // 这里的 getDataByType 会读取最新的全局变量
     const hasRated = allRatings.some(r => r.bookingId === booking.id);
-    
+
     if (hasRated) {
         showToast('您已经评价过这次服务了，谢谢！');
         // 强制刷新一下页面，把那个按钮藏起来
-        renderApp(); 
+        renderApp();
         return;
     }
 
@@ -3380,13 +3380,13 @@ function showRatingModal(config, booking) {
             </div>
         </div>
     `;
-    
+
     document.body.appendChild(modal);
-    
+
     // 星星交互逻辑
     let currentRating = 0;
     const stars = modal.querySelectorAll('.star-btn');
-    
+
     stars.forEach(star => {
         // 鼠标移入预览
         star.addEventListener('mouseenter', () => {
@@ -3395,21 +3395,21 @@ function showRatingModal(config, booking) {
                 s.style.color = i < val ? '#fbbf24' : '#e5e7eb'; // 金色 vs 灰色
             });
         });
-        
+
         // 鼠标移出恢复 (如果没有点击确认，就恢复原样)
         star.addEventListener('mouseleave', () => {
             stars.forEach((s, i) => {
                 s.style.color = i < currentRating ? '#fbbf24' : '#e5e7eb';
             });
         });
-        
+
         // 点击确认
         star.addEventListener('click', () => {
             currentRating = parseInt(star.dataset.value);
             // 点击后加个小动画
             star.style.transform = 'scale(1.4)';
             setTimeout(() => star.style.transform = 'scale(1)', 200);
-            
+
             stars.forEach((s, i) => {
                 s.style.color = i < currentRating ? '#fbbf24' : '#e5e7eb';
             });
@@ -3422,9 +3422,9 @@ function showRatingModal(config, booking) {
             showToast('请先点击星星打分哦！⭐');
             return;
         }
-        
+
         const comment = document.getElementById('ratingComment').value; // 获取评语
-        
+
         const success = await createRecord({
             type: 'rating',
             serviceId: booking.serviceId,
@@ -3434,7 +3434,7 @@ function showRatingModal(config, booking) {
             comment: comment,
             createdAt: new Date().toISOString()
         });
-        
+
         if (success) {
             showToast('评价成功！感谢您的支持 🌹');
             modal.remove();
@@ -3444,9 +3444,9 @@ function showRatingModal(config, booking) {
             }, 500); // 稍微等半秒让数据存好
         }
     });
-    
+
     document.getElementById('cancelRatingBtn').addEventListener('click', () => modal.remove());
-    
+
     // 点击背景关闭
     modal.addEventListener('click', (e) => {
         if (e.target === modal) modal.remove();
@@ -3459,8 +3459,8 @@ function showRatingModal(config, booking) {
 function showEditProfileModal(config, customer) {
     const modal = document.createElement('div');
     modal.className = 'modal-backdrop fixed inset-0 flex items-center justify-center z-50 p-4 bg-black/50 backdrop-blur-sm';
-    const defaultAvatar = 'https://cdn-icons-png.flaticon.com/512/847/847969.png'; 
-    
+    const defaultAvatar = 'https://cdn-icons-png.flaticon.com/512/847/847969.png';
+
     modal.innerHTML = `
         <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden animate-scale-in border-t-4" style="border-color: ${config.primary_action_color};">
             <div class="p-6 text-center border-b border-gray-100">
@@ -3588,7 +3588,7 @@ function showEditProfileModal(config, customer) {
         // 如果改了名字，必须把该用户所有的订单、预约、评价里的名字都改成新的
         if (newUsername !== oldUsername) {
             console.log(`🔄 检测到改名: ${oldUsername} -> ${newUsername}，正在迁移数据...`);
-            
+
             // A. 更新预约 (Bookings)
             const bookings = getDataByType('booking').filter(b => b.customerName === oldUsername);
             for (const b of bookings) {
@@ -3619,7 +3619,7 @@ function showEditProfileModal(config, customer) {
                 session.username = newUsername;
                 sessionStorage.setItem('gembrow_session', JSON.stringify(session));
             }
-            
+
             showToast(`✅ 改名成功！已为您迁移 ${bookings.length + orders.length} 条历史记录`);
         } else {
             showToast('✅ 个人资料已更新');
@@ -3677,7 +3677,7 @@ function showConfirmModal(config, message, onConfirm) {
 function showCompleteBookingModal(config, booking) {
     const modal = document.createElement('div');
     modal.className = 'modal-backdrop fixed inset-0 flex items-center justify-center z-50 p-4';
-    
+
     // 默认时间设为当前时间
     const now = new Date();
     const todayStr = now.toISOString().split('T')[0];
@@ -3712,25 +3712,25 @@ function showCompleteBookingModal(config, booking) {
             </form>
         </div>
     `;
-    
+
     document.body.appendChild(modal);
-    
+
     document.getElementById('completeBookingForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         const date = document.getElementById('actualDate').value;
         const time = document.getElementById('actualTime').value;
-        
+
         // 组合成完整的 ISO 时间字符串
         const completedAt = new Date(`${date}T${time}`).toISOString();
-        
-        await updateRecord(booking, { 
-            status: 'completed', 
+
+        await updateRecord(booking, {
+            status: 'completed',
             completedAt: completedAt // 保存实际完成时间！
         });
-        
+
         modal.remove();
     });
-    
+
     document.getElementById('cancelCompleteBtn').addEventListener('click', () => modal.remove());
     modal.addEventListener('click', (e) => { if (e.target === modal) modal.remove(); });
 }
@@ -3796,7 +3796,7 @@ function showPolicyModal(config, type) {
 
     const modal = document.createElement('div');
     modal.className = 'modal-backdrop fixed inset-0 flex items-center justify-center z-50 p-4';
-    
+
     modal.innerHTML = `
         <div class="animate-fade-in-down" style="background: rgba(255, 255, 255, 0.98); padding: 0; border-radius: 16px; max-width: 600px; width: 100%; border-top: 6px solid ${config.primary_action_color}; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); max-height: 85vh; display: flex; flex-direction: column;">
             <div class="flex justify-between items-center p-6 border-b">
@@ -3816,7 +3816,7 @@ function showPolicyModal(config, type) {
             </div>
         </div>
     `;
-    
+
     document.body.appendChild(modal);
     const close = () => modal.remove();
     document.getElementById('closePolicyBtn').addEventListener('click', close);
@@ -3992,14 +3992,14 @@ async function initApp() {
 function showEditServiceModal(config, serviceId = null) {
     const services = getDataByType('service');
     // 🔥 关键逻辑：如果有ID就是编辑，没有就是添加（给一个空对象）
-    const service = serviceId 
-        ? services.find(s => s.id === serviceId) 
+    const service = serviceId
+        ? services.find(s => s.id === serviceId)
         : { name: '', price: '', duration: 60, description: '', imageUrl: '' };
     const isEdit = !!serviceId;
 
     const modal = document.createElement('div');
     modal.className = 'modal-backdrop fixed inset-0 flex items-center justify-center z-50 p-4 bg-black/50 backdrop-blur-sm';
-    
+
     // 👇 使用你提供的精美样式
     modal.innerHTML = `
         <div style="background: rgba(255, 255, 255, 0.95); padding: 32px; border-radius: 16px; max-width: 500px; width: 100%; border: 3px solid ${config.primary_action_color}; box-shadow: 0 20px 60px rgba(0,0,0,0.3); max-height: 90vh; overflow-y: auto;" class="animate-scale-in">
@@ -4057,9 +4057,9 @@ function showEditServiceModal(config, serviceId = null) {
             </form>
         </div>
     `;
-    
+
     document.body.appendChild(modal);
-    
+
     // 图片处理逻辑
     const dropZone = document.getElementById('editDropZone');
     const fileInput = document.getElementById('editFileInput');
@@ -4080,13 +4080,13 @@ function showEditServiceModal(config, serviceId = null) {
 
     imageInput.addEventListener('input', () => updatePreview(imageInput.value));
     dropZone.addEventListener('click', () => fileInput.click());
-    
+
     fileInput.addEventListener('change', (e) => {
         const file = e.target.files[0];
         if (file) {
             // 假设 openCropperModal 已经定义好
-            if(typeof openCropperModal === 'function') {
-                 openCropperModal(file, (base64) => {
+            if (typeof openCropperModal === 'function') {
+                openCropperModal(file, (base64) => {
                     imageInput.value = base64;
                     updatePreview(base64);
                 });
@@ -4121,7 +4121,7 @@ function showEditServiceModal(config, serviceId = null) {
         modal.remove();
         renderApp();
     });
-    
+
     document.getElementById('cancelEditServiceBtn').addEventListener('click', () => modal.remove());
     modal.addEventListener('click', (e) => { if (e.target === modal) modal.remove(); });
 }
@@ -4134,7 +4134,7 @@ function showEditProductModal(config, productId = null) {
 
     const modal = document.createElement('div');
     modal.className = 'modal-backdrop fixed inset-0 flex items-center justify-center z-50 p-4 bg-black/50 backdrop-blur-sm';
-    
+
     modal.innerHTML = `
         <div class="bg-white w-full max-w-sm rounded-2xl p-6 animate-scale-in">
             <h3 class="text-xl font-bold mb-4 text-gray-800">${isEdit ? '编辑商品' : '上架新商品'}</h3>
@@ -4174,7 +4174,7 @@ function showEditProductModal(config, productId = null) {
             stock: parseInt(document.getElementById('prodStock').value) || 0,
             imageUrl: document.getElementById('prodImg').value
         };
-        
+
         if (isEdit) {
             await updateRecord(product, data);
         } else {
@@ -4196,7 +4196,7 @@ initApp();
 function showProductModal(config) {
     const modal = document.createElement('div');
     modal.className = 'modal-backdrop fixed inset-0 flex items-center justify-center z-50 p-4';
-    
+
     // 默认图
     const placeholder = 'https://via.placeholder.com/150?text=Upload+Image';
 
@@ -4254,7 +4254,7 @@ function showProductModal(config) {
     const imagePreview = document.getElementById('newProdPreview');
 
     document.getElementById('prodImgContainer').addEventListener('click', () => fileInput.click());
-    
+
     fileInput.addEventListener('change', (e) => {
         const file = e.target.files[0];
         if (file) {
@@ -4301,14 +4301,14 @@ function showProductModal(config) {
 function showEditProductModal(config, productId = null) {
     // 1. 获取数据
     const products = getDataByType('product');
-    const product = productId 
-        ? products.find(p => p.id === productId) 
+    const product = productId
+        ? products.find(p => p.id === productId)
         : { name: '', price: '', stock: 0, description: '', imageUrl: '' }; // 🔥 初始化加上 description
     const isEdit = !!productId;
 
     const modal = document.createElement('div');
     modal.className = 'modal-backdrop fixed inset-0 flex items-center justify-center z-50 p-4 bg-black/50 backdrop-blur-sm';
-    
+
     // 2. 渲染 UI
     modal.innerHTML = `
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-scale-in border-4" style="border-color: ${config.primary_action_color};">
@@ -4378,7 +4378,7 @@ function showEditProductModal(config, productId = null) {
     const imagePreview = document.getElementById('editProdPreview');
 
     document.getElementById('editProdImgContainer').addEventListener('click', () => fileInput.click());
-    
+
     fileInput.addEventListener('change', (e) => {
         const file = e.target.files[0];
         if (file) {
@@ -4450,7 +4450,7 @@ async function addToCart(productId) {
     // 1. 获取当前顾客的最新数据
     const customers = getDataByType('customer_account');
     const me = customers.find(c => c.username === loggedInCustomerName);
-    
+
     if (!me) return;
 
     // 2. 获取他现有的购物车 (如果没有就初始化为空)
@@ -4472,12 +4472,12 @@ async function addToCart(productId) {
 
     // 4. 🔥 关键：保存回数据库！这样老板那边才能看到
     await updateRecord(me, { cart: myCart });
-    
+
     showToast(`🛒 已加入: ${product.name}`);
-    
+
     // 更新全局变量 cart (用于UI显示小红点)
-    cart = myCart; 
-    renderApp(); 
+    cart = myCart;
+    renderApp();
 }
 
 // ==========================================
@@ -4486,10 +4486,10 @@ async function addToCart(productId) {
 function showCartModal(config) {
     const modal = document.createElement('div');
     modal.className = 'modal-backdrop fixed inset-0 flex items-center justify-center z-50 p-4';
-    
+
     // 计算总价
     const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0).toFixed(2);
-    
+
     modal.innerHTML = `
         <div style="background: rgba(255, 255, 255, 0.95); padding: 24px; border-radius: 16px; max-width: 500px; width: 100%; border: 3px solid ${config.secondary_action_color}; box-shadow: 0 20px 60px rgba(0,0,0,0.3); max-height: 80vh; overflow-y: auto;">
             <div class="flex justify-between items-center mb-6">
@@ -4543,18 +4543,18 @@ function showCartModal(config) {
             `}
         </div>
     `;
-    
+
     document.body.appendChild(modal);
-    
+
     // 绑定事件
     document.getElementById('closeCartBtn').addEventListener('click', () => modal.remove());
-    
+
     // 删除商品
     document.querySelectorAll('.removeFromCartBtn').forEach(btn => {
         btn.addEventListener('click', async (e) => {
             const index = parseInt(e.target.dataset.index);
             cart.splice(index, 1);
-            
+
             const customers = getDataByType('customer_account');
             const me = customers.find(c => c.username === loggedInCustomerName);
             if (me) await updateRecord(me, { cart: cart });
@@ -4564,7 +4564,7 @@ function showCartModal(config) {
             renderApp();
         });
     });
-    
+
     // 结算按钮 (下单)
     document.getElementById('checkoutBtn')?.addEventListener('click', async () => {
         if (!loggedInCustomerName) {
@@ -4575,7 +4575,7 @@ function showCartModal(config) {
         const payMethod = document.getElementById('cartPaymentMethod').value;
         const receiptNo = generateReceiptNumber();
         const now = new Date().toISOString();
-        
+
         // 1. 如果是 COD，流程不变 (直接待发货)
         if (payMethod === 'COD' || payMethod === 'Store Pickup') {
             await createRecord({
@@ -4590,13 +4590,13 @@ function showCartModal(config) {
                 createdAt: now,
                 isOnline: true
             });
-            
+
             // 清空购物车
             const customers = getDataByType('customer_account');
             const me = customers.find(c => c.username === loggedInCustomerName);
             if (me) await updateRecord(me, { cart: [] });
-            cart = []; 
-            
+            cart = [];
+
             showToast(`✅ 订单已提交！单号: ${receiptNo}`);
             modal.remove();
             renderApp();
@@ -4622,20 +4622,20 @@ function showCartModal(config) {
         const customers = getDataByType('customer_account');
         const me = customers.find(c => c.username === loggedInCustomerName);
         if (me) await updateRecord(me, { cart: [] });
-        cart = []; 
-        
+        cart = [];
+
         modal.remove();
 
         // 3. 立即引导去上传凭证
         // 我们利用 confirm 引导用户跳转
-        if(confirm(`🎉 订单已创建！单号: ${receiptNo}\n\n⚠️ 请立即支付并上传凭证以便商家接单。\n\n点击 [确定] 前往支付页面。`)) {
+        if (confirm(`🎉 订单已创建！单号: ${receiptNo}\n\n⚠️ 请立即支付并上传凭证以便商家接单。\n\n点击 [确定] 前往支付页面。`)) {
             currentView = 'myorders';
             renderApp();
             // 延时一点点，自动打开刚才那个单子的支付弹窗 (体验优化)
             setTimeout(() => {
                 const orders = getDataByType('order');
                 const justNowOrder = orders.find(o => o.receiptNumber === receiptNo);
-                if(justNowOrder) window.showUploadProofModal(justNowOrder);
+                if (justNowOrder) window.showUploadProofModal(justNowOrder);
             }, 500);
         } else {
             renderApp();
@@ -4651,7 +4651,7 @@ function showCartModal(config) {
 function showProductDetailModal(config, product) {
     const modal = document.createElement('div');
     modal.className = 'modal-backdrop fixed inset-0 flex items-center justify-center z-50 p-4';
-    
+
     // 获取购物车开关状态
     const settings = getDiscountSettings();
     const isShopEnabled = settings.enable_shop !== false; // 默认为开启
@@ -4692,12 +4692,12 @@ function showProductDetailModal(config, product) {
             </div>
         </div>
     `;
-    
+
     document.body.appendChild(modal);
-    
+
     // 关闭按钮
     document.getElementById('closeDetailBtn').addEventListener('click', () => modal.remove());
-    
+
     // 详情页里的加入购物车
     if (isShopEnabled) {
         document.getElementById('detailAddToCartBtn').addEventListener('click', () => {
@@ -4705,7 +4705,7 @@ function showProductDetailModal(config, product) {
             modal.remove();
         });
     }
-    
+
     modal.addEventListener('click', (e) => {
         if (e.target === modal) modal.remove();
     });
@@ -4717,7 +4717,7 @@ function showProductDetailModal(config, product) {
 function showPostModal(config) {
     const modal = document.createElement('div');
     modal.className = 'modal-backdrop fixed inset-0 flex items-center justify-center z-50 p-4 bg-black/50 backdrop-blur-sm';
-    
+
     modal.innerHTML = `
         <div style="background: rgba(255, 255, 255, 0.95); padding: 32px; border-radius: 16px; max-width: 500px; width: 100%; border: 3px solid ${config.primary_action_color}; box-shadow: 0 20px 60px rgba(0,0,0,0.3); max-height: 90vh; overflow-y: auto;" class="animate-scale-in">
             <h3 class="mb-6" style="font-size: ${config.font_size * 1.6}px; font-weight: 700; color: ${config.primary_action_color};">
@@ -4760,9 +4760,9 @@ function showPostModal(config) {
             </form>
         </div>
     `;
-    
+
     document.body.appendChild(modal);
-    
+
     // 图片逻辑
     const dropZone = document.getElementById('postDropZone');
     const fileInput = document.getElementById('postFileInput');
@@ -4776,11 +4776,11 @@ function showPostModal(config) {
     };
     imageInput.addEventListener('input', () => updatePreview(imageInput.value));
     dropZone.addEventListener('click', () => fileInput.click());
-    
+
     fileInput.addEventListener('change', (e) => {
         const file = e.target.files[0];
         if (file) {
-            if(typeof openCropperModal === 'function') {
+            if (typeof openCropperModal === 'function') {
                 openCropperModal(file, (base64) => {
                     imageInput.value = base64;
                     updatePreview(base64);
@@ -4806,7 +4806,7 @@ function showPostModal(config) {
         modal.remove();
         renderApp();
     });
-    
+
     document.getElementById('cancelPostBtn').addEventListener('click', () => modal.remove());
     modal.addEventListener('click', (e) => { if (e.target === modal) modal.remove(); });
 }
@@ -4824,16 +4824,16 @@ function exportData() {
         },
         data: loadDb() // 直接获取当前 LocalStorage 里的所有数据
     };
-    
+
     const dataStr = JSON.stringify(allDataExport, null, 2); // 美化格式
-    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-    
+    const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
+
     // 生成带时间的文件名: GemBrow_Backup_2026-01-02_1430.json
     const now = new Date();
     const dateStr = now.toISOString().split('T')[0];
     const timeStr = now.toTimeString().split(' ')[0].replace(/:/g, '');
     const exportFileDefaultName = `GemBrow_Backup_${dateStr}_${timeStr}.json`;
-    
+
     const linkElement = document.createElement('a');
     linkElement.setAttribute('href', dataUri);
     linkElement.setAttribute('download', exportFileDefaultName);
@@ -4852,7 +4852,7 @@ function importData(input) {
     }
 
     const reader = new FileReader();
-    reader.onload = function(e) {
+    reader.onload = function (e) {
         try {
             const jsonContent = JSON.parse(e.target.result);
             let finalData = [];
@@ -4867,19 +4867,19 @@ function importData(input) {
             } else {
                 throw new Error("文件格式不正确，找不到数据核心");
             }
-            
+
             // 简单的完整性校验 (至少要有一条数据或者空数组)
             if (!Array.isArray(finalData)) throw new Error("数据损坏");
 
             // 🔥 关键修复：Key 必须是 'gembrow_data'
             localStorage.setItem('gembrow_data', JSON.stringify(finalData));
-            
+
             // 立即刷新内存数据
             if (window.dataHandler) window.dataHandler.onDataChanged(finalData);
-            
+
             alert("🎉 数据恢复成功！页面将自动刷新。");
             location.reload();
-            
+
         } catch (err) {
             console.error(err);
             alert("❌ 恢复失败：文件可能已损坏或格式错误。\n\n错误信息: " + err.message);
@@ -4895,7 +4895,7 @@ function initGlobalWidgets() {
     // 1. 注入 CSS (样式保持不变)
     if (!document.getElementById('global-widget-styles')) {
         const style = document.createElement('style');
-        style.id = 'global-widget-styles'; 
+        style.id = 'global-widget-styles';
         style.innerHTML = `
             .goog-te-banner-frame.skiptranslate { display: none !important; height: 0 !important; visibility: hidden !important; } 
             iframe.goog-te-banner-frame { display: none !important; height: 0 !important; visibility: hidden !important; }
@@ -4918,11 +4918,11 @@ function initGlobalWidgets() {
     }
 
     // 2. WhatsApp 按钮 
-    const settings = getDiscountSettings(); 
-    const myPhone = settings.wa_number || "60123456789"; 
+    const settings = getDiscountSettings();
+    const myPhone = settings.wa_number || "60123456789";
     const defaultText = "你好，我想咨询美睫服务 (Hi, I am interested in eyelash services)";
     const waUrl = `https://wa.me/${myPhone}?text=${encodeURIComponent(defaultText)}`;
-    
+
     const oldBtn = document.querySelector('.floating-wa-btn');
     if (oldBtn) oldBtn.remove();
 
@@ -4930,7 +4930,7 @@ function initGlobalWidgets() {
     waBtn.href = waUrl;
     waBtn.target = "_blank";
     waBtn.className = "floating-wa-btn print:hidden";
-    
+
     waBtn.style.cssText = `
         position: fixed;
         bottom: 110px; 
@@ -4952,7 +4952,7 @@ function initGlobalWidgets() {
         text-decoration: none;
     `;
     waBtn.innerHTML = '<img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" style="width: 35px; height: 35px;">';
-    
+
     waBtn.onmouseover = () => waBtn.style.transform = "scale(1.1)";
     waBtn.onmouseout = () => waBtn.style.transform = "scale(1)";
 
@@ -4978,9 +4978,9 @@ function initGlobalWidgets() {
     `;
     document.body.appendChild(translateDiv);
 
-    window.googleTranslateElementInit = function() {
+    window.googleTranslateElementInit = function () {
         new google.translate.TranslateElement({
-            pageLanguage: 'zh-CN', 
+            pageLanguage: 'zh-CN',
             includedLanguages: 'en,ms,zh-CN',
             layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
             autoDisplay: false
@@ -4990,7 +4990,7 @@ function initGlobalWidgets() {
     const libScript = document.createElement('script');
     libScript.type = 'text/javascript';
     libScript.src = "//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
-    libScript.onerror = function() { translateDiv.style.display = 'none'; };
+    libScript.onerror = function () { translateDiv.style.display = 'none'; };
     document.body.appendChild(libScript);
 }
 
@@ -5008,7 +5008,7 @@ function compressImage(file, maxWidth = 800, quality = 0.7) {
                 // 1. 计算新的宽高 (保持比例)
                 let width = img.width;
                 let height = img.height;
-                
+
                 if (width > maxWidth) {
                     height = (height * maxWidth) / width;
                     width = maxWidth;
@@ -5018,7 +5018,7 @@ function compressImage(file, maxWidth = 800, quality = 0.7) {
                 const canvas = document.createElement('canvas');
                 canvas.width = width;
                 canvas.height = height;
-                
+
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, width, height);
 
@@ -5039,7 +5039,7 @@ function compressImage(file, maxWidth = 800, quality = 0.7) {
 function showBlockTimeModal(config) {
     const modal = document.createElement('div');
     modal.className = 'modal-backdrop fixed inset-0 flex items-center justify-center z-50 p-4';
-    
+
     modal.innerHTML = `
         <div style="background: white; padding: 24px; border-radius: 16px; max-width: 400px; width: 100%; border: 3px solid #374151; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
             <h3 class="mb-4 text-center font-bold text-xl text-gray-800">⛔ 设置休息/锁定时间</h3>
@@ -5075,15 +5075,15 @@ function showBlockTimeModal(config) {
             </form>
         </div>
     `;
-    
+
     document.body.appendChild(modal);
-    
+
     document.getElementById('blockTimeForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         const date = document.getElementById('blockDate').value;
         const time = document.getElementById('blockTime').value;
         const duration = parseInt(document.getElementById('blockDuration').value);
-        
+
         await createRecord({
             type: 'booking',
             customerName: '⛔ 休息中 (已锁定)',
@@ -5095,12 +5095,12 @@ function showBlockTimeModal(config) {
             status: 'completed', // 直接设为 completed 或者 pending 都可以，反正占位了
             totalAmount: 0
         });
-        
+
         showToast('✅ 时间段已锁定');
         modal.remove();
         renderApp();
     });
-    
+
     document.getElementById('cancelBlockBtn').addEventListener('click', () => modal.remove());
 }
 
@@ -5112,47 +5112,47 @@ function showCashierModal(config, appointment = null) {
     const allProducts = getDataByType('product');
     const allOrders = getDataByType('order');
     const settings = getDiscountSettings();
-    
+
     // 初始化
     let customerName = '';
     let customerPhone = '';
     let itemsToPay = [];
-    let manualAdjustment = 0; 
+    let manualAdjustment = 0;
     let mobileActiveTab = 'bill';
-    
+
     // 支付状态
     let selectedMethod = null; // 'TNG' or 'Cash'
     let isPaymentDone = false;
     let savedOrderObject = null;
-    
+
     if (appointment) {
         customerName = appointment.customerName;
         customerPhone = appointment.customerPhone || '-';
         itemsToPay.push({
             id: appointment.serviceId || 'srv_temp',
-            name: `(预约) ${appointment.serviceName}`, 
-            price: parseFloat(appointment.totalAmount || 0), 
-            quantity: 1, type: 'service', isOriginal: true 
+            name: `(预约) ${appointment.serviceName}`,
+            price: parseFloat(appointment.totalAmount || 0),
+            quantity: 1, type: 'service', isOriginal: true
         });
     } else {
         if (window.cart && window.cart.length > 0) {
             customerName = loggedInCustomerName || 'Walk-in Guest';
             const acc = getDataByType('customer_account').find(c => c.username === customerName);
             customerPhone = acc ? acc.phone : '-';
-            itemsToPay = window.cart.map(item => ({...item, isOriginal: true}));
+            itemsToPay = window.cart.map(item => ({ ...item, isOriginal: true }));
         } else {
             showToast('购物车是空的！');
             return;
         }
     }
 
-    let finalItems = [...itemsToPay]; 
+    let finalItems = [...itemsToPay];
     let mergedOrderIds = [];
     let addQty = 1;
 
     const modal = document.createElement('div');
     modal.className = 'modal-backdrop fixed inset-0 flex items-center justify-center z-50 p-0 md:p-6 bg-black/60 backdrop-blur-sm';
-    
+
     const renderContent = () => {
         // === 成功页 ===
         if (isPaymentDone) {
@@ -5179,7 +5179,7 @@ function showCashierModal(config, appointment = null) {
                 </div>
             `;
             document.getElementById('successPrintBtn').addEventListener('click', () => {
-                if(savedOrderObject && typeof showReceiptModal === 'function') showReceiptModal(config, savedOrderObject);
+                if (savedOrderObject && typeof showReceiptModal === 'function') showReceiptModal(config, savedOrderObject);
             });
             document.getElementById('successWABtn').addEventListener('click', () => {
                 window.sendReceiptByWhatsApp(customerPhone, savedOrderObject.receiptNumber, savedOrderObject.totalAmount);
@@ -5191,7 +5191,7 @@ function showCashierModal(config, appointment = null) {
         const itemsTotal = finalItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
         const finalTotal = itemsTotal + parseFloat(manualAdjustment);
         const cleanName = customerName.trim().toLowerCase();
-        
+
         const pickupOrders = allOrders.filter(o => {
             const targetName = (o.customerName || '').trim().toLowerCase();
             return targetName === cleanName && (o.paymentMethod === 'Store Pickup' || o.paymentMethod === 'COD') && o.status === 'pending' && !mergedOrderIds.includes(o.id);
@@ -5199,8 +5199,8 @@ function showCashierModal(config, appointment = null) {
 
         const serviceOptions = allServices.map(s => `<option value="service|${s.id}|${s.name}|${s.price}">💆‍♀️ ${s.name} (RM${s.price})</option>`).join('');
         const productOptions = allProducts.map(p => {
-            const stock = parseInt(p.stock||0);
-            return `<option value="product|${p.id}|${p.name}|${p.price}" ${stock<=0?'disabled':''}>📦 ${p.name} (RM${p.price}) ${stock<=0?'[缺货]':''}</option>`;
+            const stock = parseInt(p.stock || 0);
+            return `<option value="product|${p.id}|${p.name}|${p.price}" ${stock <= 0 ? 'disabled' : ''}>📦 ${p.name} (RM${p.price}) ${stock <= 0 ? '[缺货]' : ''}</option>`;
         }).join('');
 
         const leftPanelClass = mobileActiveTab === 'add' ? 'flex' : 'hidden md:flex';
@@ -5256,7 +5256,7 @@ function showCashierModal(config, appointment = null) {
                         ${finalItems.length === 0 ? `<div class="h-full flex flex-col items-center justify-center opacity-30"><span class="text-6xl mb-4">🧾</span><p>暂无项目</p></div>` : finalItems.map((item, index) => `
                             <div class="flex items-center justify-between p-2.5 rounded-xl border border-gray-100 hover:border-pink-200 shadow-sm bg-white">
                                 <div class="flex-1 min-w-0 pr-2">
-                                    <div class="flex items-center gap-2 mb-1"><span class="text-xs px-1.5 py-0.5 rounded font-bold ${item.type==='service'?'bg-purple-100 text-purple-600':'bg-blue-100 text-blue-600'}">${item.type==='service'?'服务':'商品'}</span>${item.fromOrderId?'<span class="text-[10px] bg-orange-100 text-orange-600 px-1 rounded">自取</span>':''}<h4 class="font-bold text-gray-800 truncate text-sm">${item.name}</h4></div>
+                                    <div class="flex items-center gap-2 mb-1"><span class="text-xs px-1.5 py-0.5 rounded font-bold ${item.type === 'service' ? 'bg-purple-100 text-purple-600' : 'bg-blue-100 text-blue-600'}">${item.type === 'service' ? '服务' : '商品'}</span>${item.fromOrderId ? '<span class="text-[10px] bg-orange-100 text-orange-600 px-1 rounded">自取</span>' : ''}<h4 class="font-bold text-gray-800 truncate text-sm">${item.name}</h4></div>
                                 </div>
                                 <div class="flex items-center gap-3">
                                     <div class="flex items-center bg-gray-50 rounded-lg border border-gray-200 h-7"><button onclick="window.updatePosItemQty(${index}, -1)" class="w-6 h-full text-gray-500 hover:text-red-500 font-bold">-</button><span class="w-6 text-center text-xs font-bold text-gray-700">${item.quantity}</span><button onclick="window.updatePosItemQty(${index}, 1)" class="w-6 h-full text-gray-500 hover:text-green-500 font-bold">+</button></div>
@@ -5268,16 +5268,16 @@ function showCashierModal(config, appointment = null) {
                     <div class="p-4 bg-white border-t border-gray-200 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] z-10 shrink-0">
                         <div class="flex justify-between items-end mb-4">
                             <div><p class="text-xs font-bold text-gray-400 uppercase">TOTAL AMOUNT</p><p class="text-[10px] text-gray-400">应收总额</p></div>
-                            <div class="text-right">${parseFloat(manualAdjustment)!==0?`<p class="text-xs text-pink-500 font-bold mb-1">含调整: RM${manualAdjustment}</p>`:''}<span class="text-3xl font-bold text-gray-900 tracking-tight">RM${finalTotal.toFixed(2)}</span></div>
+                            <div class="text-right">${parseFloat(manualAdjustment) !== 0 ? `<p class="text-xs text-pink-500 font-bold mb-1">含调整: RM${manualAdjustment}</p>` : ''}<span class="text-3xl font-bold text-gray-900 tracking-tight">RM${finalTotal.toFixed(2)}</span></div>
                         </div>
 
                         <div class="grid grid-cols-2 gap-3 mb-4">
                             <button onclick="window.selectPaymentMethod('TNG')" 
-                                class="py-3 rounded-xl border-2 font-bold flex items-center justify-center gap-2 transition-all ${selectedMethod==='TNG' ? 'border-blue-500 bg-blue-50 text-blue-700 ring-2 ring-blue-100' : 'border-gray-200 text-gray-500 hover:bg-gray-50'}">
+                                class="py-3 rounded-xl border-2 font-bold flex items-center justify-center gap-2 transition-all ${selectedMethod === 'TNG' ? 'border-blue-500 bg-blue-50 text-blue-700 ring-2 ring-blue-100' : 'border-gray-200 text-gray-500 hover:bg-gray-50'}">
                                 <span>🔵</span> TNG
                             </button>
                             <button onclick="window.selectPaymentMethod('Cash')" 
-                                class="py-3 rounded-xl border-2 font-bold flex items-center justify-center gap-2 transition-all ${selectedMethod==='Cash' ? 'border-green-500 bg-green-50 text-green-700 ring-2 ring-green-100' : 'border-gray-200 text-gray-500 hover:bg-gray-50'}">
+                                class="py-3 rounded-xl border-2 font-bold flex items-center justify-center gap-2 transition-all ${selectedMethod === 'Cash' ? 'border-green-500 bg-green-50 text-green-700 ring-2 ring-green-100' : 'border-gray-200 text-gray-500 hover:bg-gray-50'}">
                                 <span>💵</span> Cash
                             </button>
                         </div>
@@ -5293,9 +5293,9 @@ function showCashierModal(config, appointment = null) {
         `;
 
         window.setMobileTab = (tab) => { mobileActiveTab = tab; renderContent(); }
-        window.adjustPosAddQty = (c) => { const n = addQty+c; if(n>=1) {addQty=n; document.getElementById('posAddQtyInput').value=addQty;} }
-        window.updatePosItemQty = (i, c) => { if(c===-999) finalItems.splice(i,1); else {const n=finalItems[i].quantity+c; if(n>=1) finalItems[i].quantity=n;} renderContent(); }
-        
+        window.adjustPosAddQty = (c) => { const n = addQty + c; if (n >= 1) { addQty = n; document.getElementById('posAddQtyInput').value = addQty; } }
+        window.updatePosItemQty = (i, c) => { if (c === -999) finalItems.splice(i, 1); else { const n = finalItems[i].quantity + c; if (n >= 1) finalItems[i].quantity = n; } renderContent(); }
+
         // 🔥 修复：选中支付方式的逻辑
         window.selectPaymentMethod = (method) => {
             // 如果点的是 TNG，且配置了二维码
@@ -5320,23 +5320,23 @@ function showCashierModal(config, appointment = null) {
             if (!val) return showToast('请先选择项目');
             const [type, id, name, price] = val.split('|');
             const existing = finalItems.find(i => i.id === id && !i.isOriginal && !i.fromOrderId);
-            if(existing) existing.quantity+=addQty; else finalItems.push({id, name, price:parseFloat(price), quantity:addQty, type, isAdded:true});
-            addQty=1; if(window.innerWidth<768) mobileActiveTab='bill'; renderContent();
+            if (existing) existing.quantity += addQty; else finalItems.push({ id, name, price: parseFloat(price), quantity: addQty, type, isAdded: true });
+            addQty = 1; if (window.innerWidth < 768) mobileActiveTab = 'bill'; renderContent();
         });
 
         const mergeBtn = document.getElementById('posMergeBtn');
         if (mergeBtn) mergeBtn.addEventListener('click', () => {
-            pickupOrders.forEach(o => { o.items.forEach(i => finalItems.push({...i, price:parseFloat(i.price), fromOrderId:o.id})); mergedOrderIds.push(o.id); });
-            if(window.innerWidth<768) mobileActiveTab='bill'; renderContent(); showToast('✅ 已合并自取单');
+            pickupOrders.forEach(o => { o.items.forEach(i => finalItems.push({ ...i, price: parseFloat(i.price), fromOrderId: o.id })); mergedOrderIds.push(o.id); });
+            if (window.innerWidth < 768) mobileActiveTab = 'bill'; renderContent(); showToast('✅ 已合并自取单');
         });
 
         document.getElementById('posAdjustmentInput').addEventListener('change', (e) => { manualAdjustment = e.target.value || 0; renderContent(); });
 
         // ⚡️ 最终确认逻辑
         const confirmBtn = document.getElementById('finalConfirmBtn');
-        if(confirmBtn) {
+        if (confirmBtn) {
             confirmBtn.addEventListener('click', async () => {
-                if(!selectedMethod) return;
+                if (!selectedMethod) return;
                 confirmBtn.innerHTML = '⏳ 提交中...';
                 confirmBtn.disabled = true;
                 await executeCheckout(selectedMethod, finalTotal);
@@ -5351,39 +5351,39 @@ function showCashierModal(config, appointment = null) {
             type: 'order', receiptNumber: receiptNo, customerName: customerName,
             items: finalItems, totalAmount: finalTotal, adjustment: manualAdjustment,
             paymentMethod: method, status: 'completed', paymentStatus: 'paid',
-            completedAt: new Date().toISOString(), isWalkIn: true, 
-            mergedFrom: mergedOrderIds.length > 0 ? mergedOrderIds : null 
+            completedAt: new Date().toISOString(), isWalkIn: true,
+            mergedFrom: mergedOrderIds.length > 0 ? mergedOrderIds : null
         };
 
         await createRecord(savedOrderObject);
 
         // 回写单号给预约
-        if (appointment) await updateRecord(appointment, { 
-            status: 'completed', 
-            completedAt: new Date().toISOString(), 
-            paymentMethod: method, 
+        if (appointment) await updateRecord(appointment, {
+            status: 'completed',
+            completedAt: new Date().toISOString(),
+            paymentMethod: method,
             totalAmount: finalTotal,
             receiptNumber: receiptNo // 👈 关联单号
         });
 
         // 还原合并单状态
-        if (mergedOrderIds.length > 0) { 
-            for (const oldId of mergedOrderIds) { 
-                const o = allOrders.find(x => x.id === oldId); 
-                if(o) await updateRecord(o, { 
-                    status: 'completed', 
-                    pickupStatus: 'merged_into_'+receiptNo, 
-                    customerReceived: true 
-                }); 
+        if (mergedOrderIds.length > 0) {
+            for (const oldId of mergedOrderIds) {
+                const o = allOrders.find(x => x.id === oldId);
+                if (o) await updateRecord(o, {
+                    status: 'completed',
+                    pickupStatus: 'merged_into_' + receiptNo,
+                    customerReceived: true
+                });
             }
         }
-        
+
         // 扣库存
         const products = getDataByType('product');
         for (const item of finalItems) {
             if (item.type === 'product' || item.stock) {
                 const p = products.find(prod => prod.id === item.id) || products.find(prod => prod.name === item.name);
-                if (p) await updateRecord(p, { stock: Math.max(0, parseInt(p.stock||0) - item.quantity) });
+                if (p) await updateRecord(p, { stock: Math.max(0, parseInt(p.stock || 0) - item.quantity) });
             }
         }
 
@@ -5402,7 +5402,7 @@ function showCashierModal(config, appointment = null) {
 function showQrPaymentCheck(qrUrl, amount, onCloseCallback) {
     const modal = document.createElement('div');
     modal.className = 'modal-backdrop fixed inset-0 flex items-center justify-center z-[90] p-4 bg-black/80 backdrop-blur-md';
-    
+
     modal.innerHTML = `
         <div class="bg-white rounded-xl shadow-2xl w-full max-w-sm overflow-hidden animate-scale-in">
             <div class="p-4 flex items-center justify-center gap-2 border-b">
@@ -5425,13 +5425,13 @@ function showQrPaymentCheck(qrUrl, amount, onCloseCallback) {
             </div>
         </div>
     `;
-    
+
     document.body.appendChild(modal);
-    
+
     // 点击“关闭/已支付”时，触发回调，让父页面变成选中状态
     document.getElementById('qrCloseBtn').addEventListener('click', () => {
         modal.remove();
-        if(onCloseCallback) onCloseCallback();
+        if (onCloseCallback) onCloseCallback();
     });
 }
 
@@ -5440,7 +5440,7 @@ function showQrPaymentCheck(qrUrl, amount, onCloseCallback) {
 // ==========================================
 function renderHistoryPage(config) {
     window.historyTab = window.historyTab || 'booking';
-    window.historyFilter = window.historyFilter || 'all'; 
+    window.historyFilter = window.historyFilter || 'all';
 
     const allBookings = getDataByType('booking');
     const allOrders = getDataByType('order');
@@ -5464,19 +5464,19 @@ function renderHistoryPage(config) {
             <div class="flex justify-between items-center border-b border-gray-200 mb-6">
                 <div class="flex gap-4">
                     <button onclick="window.historyTab='booking'; renderApp()" 
-                        class="pb-3 font-bold transition-colors ${window.historyTab==='booking' ? 'text-pink-600 border-b-2 border-pink-600' : 'text-gray-400'}">
+                        class="pb-3 font-bold transition-colors ${window.historyTab === 'booking' ? 'text-pink-600 border-b-2 border-pink-600' : 'text-gray-400'}">
                         预约记录
                     </button>
                     <button onclick="window.historyTab='shopping'; renderApp()" 
-                        class="pb-3 font-bold transition-colors ${window.historyTab==='shopping' ? 'text-pink-600 border-b-2 border-pink-600' : 'text-gray-400'}">
+                        class="pb-3 font-bold transition-colors ${window.historyTab === 'shopping' ? 'text-pink-600 border-b-2 border-pink-600' : 'text-gray-400'}">
                         购物账单
                     </button>
                 </div>
                 <div class="pb-2">
                     <select onchange="window.historyFilter=this.value; renderApp()" class="text-xs font-bold bg-gray-50 border border-gray-200 rounded-lg px-2 py-1 outline-none text-gray-600">
-                        <option value="all" ${window.historyFilter==='all'?'selected':''}>全部状态</option>
-                        <option value="completed" ${window.historyFilter==='completed'?'selected':''}>✅ 已完成</option>
-                        <option value="cancelled" ${window.historyFilter==='cancelled'?'selected':''}>🚫 已取消</option>
+                        <option value="all" ${window.historyFilter === 'all' ? 'selected' : ''}>全部状态</option>
+                        <option value="completed" ${window.historyFilter === 'completed' ? 'selected' : ''}>✅ 已完成</option>
+                        <option value="cancelled" ${window.historyFilter === 'cancelled' ? 'selected' : ''}>🚫 已取消</option>
                     </select>
                 </div>
             </div>
@@ -5489,10 +5489,10 @@ function renderHistoryPage(config) {
                 ` : `
                     <div class="space-y-4">
                         ${historyBookings.map(b => {
-                            const isRated = allRatings.some(r => r.bookingId === b.id);
-                            const completedTime = b.completedAt ? new Date(b.completedAt).toLocaleString() : '-';
-                            
-                            return `
+        const isRated = allRatings.some(r => r.bookingId === b.id);
+        const completedTime = b.completedAt ? new Date(b.completedAt).toLocaleString() : '-';
+
+        return `
                             <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 relative overflow-hidden transition-all hover:shadow-md">
                                 <div class="flex justify-between items-start mb-2">
                                     <div>
@@ -5523,13 +5523,13 @@ function renderHistoryPage(config) {
                                             </button>
                                         ` : ''}
 
-                                        ${b.status === 'completed' ? (isRated ? 
-                                            `<span class="text-xs font-bold text-yellow-500 bg-yellow-50 px-3 py-1.5 rounded-lg border border-yellow-100">🌟 已评价</span>` : 
-                                            `<button class="rateItemBtn px-4 py-1.5 rounded-lg text-xs font-bold bg-pink-50 text-pink-600 border border-pink-200 hover:bg-pink-100 transition-colors" 
+                                        ${b.status === 'completed' ? (isRated ?
+                `<span class="text-xs font-bold text-yellow-500 bg-yellow-50 px-3 py-1.5 rounded-lg border border-yellow-100">🌟 已评价</span>` :
+                `<button class="rateItemBtn px-4 py-1.5 rounded-lg text-xs font-bold bg-pink-50 text-pink-600 border border-pink-200 hover:bg-pink-100 transition-colors" 
                                                 data-type="booking" data-id="${b.id}">
                                                 ⭐ 去评价
                                              </button>`
-                                        ) : ''}
+            ) : ''}
                                     </div>
                                 </div>
                             </div>
@@ -5611,7 +5611,7 @@ function handleImageUpload(event, imgId, placeholderId, inputId) {
     } else {
         // 后备方案 (如果没有压缩功能)
         const reader = new FileReader();
-        reader.onload = function(e) {
+        reader.onload = function (e) {
             const dataUrl = e.target.result;
             document.getElementById(inputId).value = dataUrl;
             const img = document.getElementById(imgId);
@@ -5630,12 +5630,12 @@ function cleanPhoneNumber(phone) {
     if (!phone) return '';
     // 1. 去掉所有非数字字符 (空格、横杠、括号)
     let cleaned = phone.replace(/\D/g, '');
-    
+
     // 2. 如果是 01 开头，替换为 601
     if (cleaned.startsWith('01')) {
         cleaned = '6' + cleaned;
     }
-    
+
     // 3. 如果没带 60，且是 1 开头，补上 60 (防呆)
     if (cleaned.startsWith('1')) {
         cleaned = '60' + cleaned;
@@ -5651,7 +5651,7 @@ function showTicketModal(config, booking) {
     const modal = document.createElement('div');
     modal.className = 'modal-backdrop fixed inset-0 flex items-center justify-center z-[60] p-4';
     modal.style.background = 'rgba(0,0,0,0.85)';
-    
+
     // 👇 使用刚才生成的单号，如果没有就显示一个临时的
     const displayNo = booking.receiptNumber || ('MY-' + booking.id.slice(-6));
 
@@ -5728,7 +5728,7 @@ function showTicketModal(config, booking) {
         const btn = document.getElementById('saveTicketBtn');
         const originalText = btn.innerText;
         btn.innerText = "⏳ 生成中...";
-        
+
         if (typeof html2canvas !== 'undefined') {
             html2canvas(document.getElementById('ticketNode'), {
                 backgroundColor: null,
@@ -5756,7 +5756,7 @@ function generateReceiptNumber() {
     const yy = now.getFullYear().toString().slice(-2); // 25
     const mm = (now.getMonth() + 1).toString().padStart(2, '0'); // 01
     const prefix = `MY-${yy}${mm}`; // 例如 MY-2501
-    
+
     // 1. 获取预约里的单号
     const bookingReceipts = getDataByType('booking')
         .map(b => b.receiptNumber)
@@ -5779,9 +5779,9 @@ function generateReceiptNumber() {
             maxSeq = seq;
         }
     });
-    
+
     // 4. 最大号 + 1
-    const nextSeq = (maxSeq + 1).toString().padStart(4, '0'); 
+    const nextSeq = (maxSeq + 1).toString().padStart(4, '0');
     return `${prefix}${nextSeq}`;
 }
 
@@ -5813,15 +5813,15 @@ window.adjustOrderQty = async (orderId, itemIndex, change) => {
 
     // 更新数量
     item.quantity = newQty;
-    
+
     // 重新计算总价
     const newTotal = order.items.reduce((sum, i) => sum + (i.price * i.quantity), 0);
-    
-    await updateRecord(order, { 
+
+    await updateRecord(order, {
         items: order.items,
         totalAmount: newTotal.toFixed(2)
     });
-    
+
     renderApp(); // 刷新界面
 };
 
@@ -5854,7 +5854,7 @@ window.completeOrderWithStock = async (orderId) => {
     for (const item of order.items) {
         // 尝试用ID找，找不到用名字找(兼容旧数据)
         const product = products.find(p => p.id === item.id) || products.find(p => p.name === item.name);
-        
+
         if (product) {
             if (product.stock < item.quantity) {
                 alert(`❌ 无法完成！商品 [${product.name}] 库存不足 (剩 ${product.stock})`);
@@ -5872,7 +5872,7 @@ window.completeOrderWithStock = async (orderId) => {
 
     // 3. 更新订单状态
     const now = new Date().toISOString();
-    await updateRecord(order, { 
+    await updateRecord(order, {
         status: 'completed',
         paymentStatus: 'paid', // 标记为已付款
         completedAt: now       // 记录入账时间
@@ -5904,7 +5904,7 @@ function setupOrderListeners(config) {
                     }
                     showToast('🔄 已撤销完成，库存已退回');
                 }
-                
+
                 await updateRecord(o, { status: 'cancelled' });
                 renderApp();
             });
@@ -5918,7 +5918,7 @@ function setupOrderListeners(config) {
 function showQrPopup(qrUrl) {
     const modal = document.createElement('div');
     modal.className = 'fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in';
-    
+
     modal.innerHTML = `
         <div class="bg-white p-6 rounded-2xl shadow-2xl max-w-sm w-full text-center relative transform scale-100 transition-transform">
             <h3 class="text-xl font-bold text-blue-600 mb-4 flex items-center justify-center gap-2">
@@ -5936,9 +5936,9 @@ function showQrPopup(qrUrl) {
             </button>
         </div>
     `;
-    
+
     document.body.appendChild(modal);
-    
+
     // 关闭事件
     const close = () => modal.remove();
     document.getElementById('closeQrBtn').addEventListener('click', close);
@@ -5950,14 +5950,14 @@ function showQrPopup(qrUrl) {
 async function updateMyProfile(accountId) {
     const newPhone = document.getElementById('myPhone').value;
     const newPass = document.getElementById('newPassword').value;
-    
+
     const accounts = getDataByType('customer_account');
     const myAccount = accounts.find(a => a.id === accountId);
-    
+
     if (myAccount) {
         const updateData = { phone: cleanPhoneNumber(newPhone) };
         if (newPass) updateData.password = newPass;
-        
+
         await updateRecord(myAccount, updateData);
         showToast('✅ 资料已更新');
     }
@@ -5966,18 +5966,18 @@ async function updateMyProfile(accountId) {
 // ==========================================
 // 👇 [v1.3.5] 零售收银面板 (优化版：图片比例 & 布局宽度)
 // ==========================================
-window.retailCart = window.retailCart || []; 
-window.retailCustomer = window.retailCustomer || null; 
-window.retailCategoryFilter = window.retailCategoryFilter || 'all'; 
+window.retailCart = window.retailCart || [];
+window.retailCustomer = window.retailCustomer || null;
+window.retailCategoryFilter = window.retailCategoryFilter || 'all';
 
 function renderRetailPad(config, services) {
     const products = getDataByType('product');
     const customers = getDataByType('customer_account');
-    
+
     // 1. 合并与筛选
     let allItems = [];
     const markedProducts = products.map(p => ({ ...p, itemType: 'product' }));
-    const markedServices = services.map(s => ({ ...s, itemType: 'service', stock: 9999 })); 
+    const markedServices = services.map(s => ({ ...s, itemType: 'service', stock: 9999 }));
 
     if (window.retailCategoryFilter === 'product') {
         allItems = markedProducts;
@@ -6023,11 +6023,11 @@ function renderRetailPad(config, services) {
                 <div class="flex-1 overflow-y-auto p-4 bg-gray-50 custom-scrollbar">
                     <div id="retailProductGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                         ${allItems.map(item => {
-                            const isService = item.itemType === 'service';
-                            const stock = parseInt(item.stock || 0);
-                            const isOOS = !isService && stock <= 0;
-                            
-                            return `
+        const isService = item.itemType === 'service';
+        const stock = parseInt(item.stock || 0);
+        const isOOS = !isService && stock <= 0;
+
+        return `
                                 <div onclick="${isOOS ? '' : `window.addToRetailCart('${item.id}', '${item.itemType}')`}" 
                                      class="bg-white p-3 rounded-xl shadow-sm border border-gray-100 flex flex-col relative group transition-all ${isOOS ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:shadow-md hover:border-pink-300 active:scale-[0.98] duration-200'}">
                                     
@@ -6041,14 +6041,14 @@ function renderRetailPad(config, services) {
                                     
                                     <div class="mt-auto flex justify-between items-center">
                                         <span class="font-bold text-pink-600 text-base">RM${parseFloat(item.price).toFixed(0)}<span class="text-xs">.00</span></span>
-                                        ${isOOS ? 
-                                            `<span class="text-[10px] font-bold px-2 py-1 rounded bg-red-100 text-red-600">缺货</span>` : 
-                                            `<div class="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 group-hover:bg-pink-500 group-hover:text-white transition-colors text-lg font-bold">+</div>`
-                                        }
+                                        ${isOOS ?
+                `<span class="text-[10px] font-bold px-2 py-1 rounded bg-red-100 text-red-600">缺货</span>` :
+                `<div class="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 group-hover:bg-pink-500 group-hover:text-white transition-colors text-lg font-bold">+</div>`
+            }
                                     </div>
                                 </div>
                             `;
-                        }).join('')}
+    }).join('')}
                     </div>
                 </div>
             </div>
@@ -6145,7 +6145,7 @@ window.addToRetailCart = (id, type) => {
     if (!item) return;
 
     const existing = window.retailCart.find(i => i.id === id);
-    
+
     // 如果是商品，检查库存
     if (type === 'product') {
         const currentQty = existing ? existing.quantity : 0;
@@ -6178,7 +6178,7 @@ window.updateRetailQty = (index, change) => {
         window.retailCart.splice(index, 1);
     } else {
         const newQty = item.quantity + change;
-        
+
         // 检查库存 (如果是加的话)
         if (change > 0) {
             const products = getDataByType('product');
@@ -6204,7 +6204,7 @@ window.filterRetailProducts = (query) => {
     if (!grid) return;
     const cards = grid.children;
     const lowerQ = query.toLowerCase();
-    
+
     for (let card of cards) {
         const name = card.querySelector('h4').innerText.toLowerCase();
         if (name.includes(lowerQ)) {
@@ -6226,14 +6226,14 @@ window.selectRetailCustomer = (customerId) => {
 // 5. 核心：零售结账
 window.processRetailCheckout = async (method) => {
     if (window.retailCart.length === 0) return;
-    
+
     showToast('⏳ 正在处理交易...');
-    
+
     const config = window.elementSdk.config;
     const total = window.retailCart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     const receiptNo = generateReceiptNumber();
     const now = new Date().toISOString();
-    
+
     // 1. 扣减库存
     const products = getDataByType('product');
     for (const item of window.retailCart) {
@@ -6274,15 +6274,15 @@ window.processRetailCheckout = async (method) => {
         // 假设 RM 1 = 1 分 (你可以根据 points_to_rm_rate 反推，或者设一个 rm_to_points_rate)
         // 这里简单处理：消费 RM 1 得 1 分
         const pointsEarned = Math.floor(total);
-        await updateRecord(window.retailCustomer, { 
+        await updateRecord(window.retailCustomer, {
             points: (window.retailCustomer.points || 0) + pointsEarned,
-            lifetime_points: (window.retailCustomer.lifetime_points || 0) + pointsEarned 
+            lifetime_points: (window.retailCustomer.lifetime_points || 0) + pointsEarned
         });
         showToast(`🎉 会员积分 +${pointsEarned}`);
     }
 
     showToast(`✅ 收款成功！单号: ${receiptNo}`);
-    
+
     // 5. 清理现场
     window.retailCart = [];
     window.retailCustomer = null;
@@ -6297,13 +6297,13 @@ window.showRetailPaymentModal = (method, totalAmount) => {
 
     const config = window.elementSdk.config;
     const settings = getDiscountSettings();
-    
+
     // 1. 预生成单号
-    const receiptNo = generateReceiptNumber(); 
+    const receiptNo = generateReceiptNumber();
     const now = new Date();
 
     // 2. 二维码区域
-    const qrSection = (method === 'TNG' && settings.tng_qr_url) 
+    const qrSection = (method === 'TNG' && settings.tng_qr_url)
         ? `<div class="mb-4 p-2 bg-blue-50 border-2 border-dashed border-blue-200 rounded-xl inline-block">
                <img src="${settings.tng_qr_url}" class="w-48 h-48 object-cover rounded-lg">
                <p class="text-xs text-blue-500 font-bold mt-1">请扫描二维码</p>
@@ -6312,7 +6312,7 @@ window.showRetailPaymentModal = (method, totalAmount) => {
 
     const modal = document.createElement('div');
     modal.className = 'modal-backdrop fixed inset-0 flex items-center justify-center z-50 p-4'; // z-50
-    
+
     modal.innerHTML = `
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-fade-in-up border-4" 
              style="border-color: ${method === 'TNG' ? '#3b82f6' : '#10b981'};">
@@ -6369,10 +6369,10 @@ window.showRetailPaymentModal = (method, totalAmount) => {
             paymentMethod: method,
             completedAt: now.toISOString()
         };
-        
+
         // 🔥 关键：不要 modal.style.display = 'none'！
         // 直接叠加上去。showReceiptModal 内部要设置 z-index > 50
-        showReceiptModal(config, previewData); 
+        showReceiptModal(config, previewData);
     });
 
     // 3. 确认收款：真实写入数据库
@@ -6412,21 +6412,21 @@ window.executeRetailTransaction = async (receiptNo, method, totalAmount, dateObj
         receiptNumber: receiptNo,
         createdAt: dateObj.toISOString(),
         completedAt: dateObj.toISOString(),
-        isRetail: true 
+        isRetail: true
     });
 
     // 3. 积分逻辑
     if (window.retailCustomer) {
         const pointsEarned = Math.floor(totalAmount);
-        await updateRecord(window.retailCustomer, { 
+        await updateRecord(window.retailCustomer, {
             points: (window.retailCustomer.points || 0) + pointsEarned,
-            lifetime_points: (window.retailCustomer.lifetime_points || 0) + pointsEarned 
+            lifetime_points: (window.retailCustomer.lifetime_points || 0) + pointsEarned
         });
         showToast(`🎉 会员积分 +${pointsEarned}`);
     }
 
     showToast(`✅ 交易完成！单号: ${receiptNo}`);
-    
+
     // 4. 只有在这里才清空购物车
     window.retailCart = [];
     window.retailCustomer = null;
@@ -6438,9 +6438,9 @@ window.executeRetailTransaction = async (receiptNo, method, totalAmount, dateObj
 // ==========================================
 function showFulfillOrderModal(config, order) {
     const products = getDataByType('product');
-    const settings = getDiscountSettings(); 
+    const settings = getDiscountSettings();
     let stockIssues = [];
-    
+
     // 1. 库存检查
     order.items.forEach(item => {
         const p = products.find(prod => prod.id === item.id) || products.find(prod => prod.name === item.name);
@@ -6453,11 +6453,11 @@ function showFulfillOrderModal(config, order) {
     });
 
     const hasStockIssue = stockIssues.length > 0;
-    
+
     // 2. 物流列表 (加入“商家自送”)
     const couriers = [
-        'J&T', 'PosLaju', 'GDEX', 'NinjaVan', 'ShopeeXpress', 'DHL', 
-        'CityLink', 'Lalamove', 'GrabExpress', 
+        'J&T', 'PosLaju', 'GDEX', 'NinjaVan', 'ShopeeXpress', 'DHL',
+        'CityLink', 'Lalamove', 'GrabExpress',
         'Shop Delivery (商家自送)', // 👈 新增这个
         'Other'
     ];
@@ -6486,7 +6486,7 @@ function showFulfillOrderModal(config, order) {
 
     const modal = document.createElement('div');
     modal.className = 'modal-backdrop fixed inset-0 flex items-center justify-center z-50 p-4';
-    
+
     modal.innerHTML = `
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-fade-in border-4 border-purple-500">
             <div class="p-6 bg-purple-50 border-b border-purple-100">
@@ -6571,7 +6571,7 @@ function showFulfillOrderModal(config, order) {
         const trackingNo = trackingInput.value;
         const paymentRef = document.getElementById('fulfillPaymentRef').value;
         const finalMethod = document.getElementById('fulfillPaymentMethod').value;
-        
+
         // 🛑 强制校验：必须选物流 + 必须填单号
         if (!courier) {
             alert('请选择物流公司！');
@@ -6596,12 +6596,12 @@ function showFulfillOrderModal(config, order) {
         }
 
         // 2. 更新订单
-        await updateRecord(order, { 
+        await updateRecord(order, {
             status: 'completed',
             paymentStatus: 'paid',
             completedAt: new Date().toISOString(),
             courier: courier,
-            trackingNumber: trackingNo, 
+            trackingNumber: trackingNo,
             paymentReference: paymentRef,
             paymentMethod: finalMethod
         });
@@ -6619,7 +6619,7 @@ window.showUploadProofModal = (order) => {
     const settings = getDiscountSettings();
     const modal = document.createElement('div');
     modal.className = 'modal-backdrop fixed inset-0 flex items-center justify-center z-50 p-4';
-    
+
     // 根据支付方式显示收款信息
     let bankInfoHtml = '';
     if (order.paymentMethod === 'TNG') {
@@ -6701,7 +6701,7 @@ window.showUploadProofModal = (order) => {
     // 提交逻辑
     document.getElementById('submitProofBtn').addEventListener('click', async () => {
         const refNo = document.getElementById('proofRefNo').value;
-        
+
         if (!refNo && !selectedFileName) {
             alert('请至少填写“流水号”或“上传截图”其中一项。');
             return;
@@ -6712,7 +6712,7 @@ window.showUploadProofModal = (order) => {
         btn.disabled = true;
 
         // 更新订单状态
-        await updateRecord(order, { 
+        await updateRecord(order, {
             status: 'pending', // 变回 pending (让商家发货)
             paymentStatus: 'paid_verify', // 待核实
             proofRef: refNo || '无流水号',
@@ -6747,13 +6747,13 @@ function showCustomerDetailModal(config, customer) {
     const totalVisits = custBookings.length + custOrders.length;
 
     // 计算平均评分
-    const avgRating = custRatings.length > 0 
+    const avgRating = custRatings.length > 0
         ? (custRatings.reduce((sum, r) => sum + r.rating, 0) / custRatings.length).toFixed(1)
         : '暂无';
 
     const modal = document.createElement('div');
     modal.className = 'modal-backdrop fixed inset-0 flex items-center justify-center z-50 p-4';
-    
+
     // 头像处理
     const avatarSrc = customer.avatar || customer.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(customer.username)}`;
 
@@ -6800,15 +6800,15 @@ function showCustomerDetailModal(config, customer) {
                     
                     <div class="space-y-3">
                         ${[...custBookings, ...custOrders]
-                            .sort((a, b) => new Date(b.completedAt || b.createdAt) - new Date(a.completedAt || a.createdAt))
-                            .map(item => {
-                                const isBooking = item.type === 'booking'; // 假设数据里有 type 字段区分，或者通过 receiptNumber 判断
-                                // 这里简单判断：如果有 serviceName 就是服务
-                                const isService = !!item.serviceName;
-                                const date = new Date(item.completedAt || item.createdAt).toLocaleDateString();
-                                const amount = item.totalAmount || item.servicePrice || 0;
-                                
-                                return `
+            .sort((a, b) => new Date(b.completedAt || b.createdAt) - new Date(a.completedAt || a.createdAt))
+            .map(item => {
+                const isBooking = item.type === 'booking'; // 假设数据里有 type 字段区分，或者通过 receiptNumber 判断
+                // 这里简单判断：如果有 serviceName 就是服务
+                const isService = !!item.serviceName;
+                const date = new Date(item.completedAt || item.createdAt).toLocaleDateString();
+                const amount = item.totalAmount || item.servicePrice || 0;
+
+                return `
                                     <div class="flex justify-between items-center text-sm p-2 rounded hover:bg-gray-50 border-b border-gray-50 last:border-0">
                                         <div>
                                             <div class="font-bold text-gray-700">
@@ -6819,7 +6819,7 @@ function showCustomerDetailModal(config, customer) {
                                         <div class="font-mono font-bold text-gray-600">RM${parseFloat(amount).toFixed(2)}</div>
                                     </div>
                                 `;
-                            }).join('') || '<p class="text-gray-400 text-sm text-center py-4">暂无消费记录</p>'}
+            }).join('') || '<p class="text-gray-400 text-sm text-center py-4">暂无消费记录</p>'}
                     </div>
                 </div>
 
@@ -6838,7 +6838,7 @@ function showCustomerDetailModal(config, customer) {
                         ` : custRatings.map(r => `
                             <div class="bg-white p-3 rounded-xl border border-gray-200 shadow-sm">
                                 <div class="flex justify-between mb-1">
-                                    <span class="text-yellow-500 text-sm font-bold">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</span>
+                                    <span class="text-yellow-500 text-sm font-bold">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</span>
                                     <span class="text-[10px] text-gray-400">${new Date(r.createdAt).toLocaleDateString()}</span>
                                 </div>
                                 <p class="text-xs text-gray-600 italic">"${r.comment || '没写评语...'}"</p>
@@ -6880,7 +6880,7 @@ function showCustomerDetailModal(config, customer) {
 function showFeedbackModal(config) {
     const modal = document.createElement('div');
     modal.className = 'modal-backdrop fixed inset-0 flex items-center justify-center z-[70] p-4';
-    
+
     // 自动获取当前页面信息，方便定位 Bug
     const currentPage = currentView;
     const user = loggedInCustomerName || (currentMode === 'owner' ? 'Owner' : 'Guest');
@@ -6942,7 +6942,7 @@ function showFeedbackModal(config) {
     document.getElementById('submitFeedbackBtn').addEventListener('click', async () => {
         const content = document.getElementById('feedbackContent').value;
         const type = document.querySelector('input[name="fbType"]:checked').value;
-        
+
         if (!content.trim()) {
             alert('请填写内容哦~');
             return;
@@ -6961,7 +6961,7 @@ function showFeedbackModal(config) {
 
         showToast('✅ 收到！感谢您的反馈 ❤️');
         modal.remove();
-        
+
         // 如果是老板，可以考虑刷新一下界面(如果有反馈列表页的话)
     });
 
@@ -6976,7 +6976,7 @@ function showFeedbackModal(config) {
 window.showCancelReasonModal = (bookingId) => {
     const modal = document.createElement('div');
     modal.className = 'modal-backdrop fixed inset-0 flex items-center justify-center z-[80] p-4 bg-black/50';
-    
+
     modal.innerHTML = `
         <div class="bg-white rounded-xl shadow-2xl w-full max-w-sm overflow-hidden animate-fade-in-up border-t-4 border-red-500">
             <div class="p-5">
@@ -7016,7 +7016,7 @@ window.showCancelReasonModal = (bookingId) => {
     // 监听 "Other" 选项显示输入框
     const radios = modal.querySelectorAll('input[name="cancelReason"]');
     const otherInput = document.getElementById('otherReasonInput');
-    
+
     radios.forEach(r => {
         r.addEventListener('change', (e) => {
             if (e.target.value === 'Other') {
@@ -7035,7 +7035,7 @@ window.showCancelReasonModal = (bookingId) => {
             alert('请选择一个原因');
             return;
         }
-        
+
         let finalReason = selected.value;
         if (finalReason === 'Other') {
             finalReason = otherInput.value.trim();
@@ -7047,8 +7047,8 @@ window.showCancelReasonModal = (bookingId) => {
 
         const booking = getDataByType('booking').find(b => b.id === bookingId);
         if (booking) {
-            await updateRecord(booking, { 
-                status: 'cancelled', 
+            await updateRecord(booking, {
+                status: 'cancelled',
                 cancelledAt: new Date().toISOString(),
                 cancelReason: finalReason // 👈 保存原因
             });
@@ -7064,7 +7064,7 @@ window.showCancelReasonModal = (bookingId) => {
 // ==========================================
 // 👇 [v1.3.6 Fix] 财务报表专用打印函数
 // ==========================================
-window.printStats = function(dateRange) {
+window.printStats = function (dateRange) {
     // 1. 重新获取并过滤数据 (确保打印的是当前看到的)
     const allBookings = getDataByType('booking');
     const allOrders = getDataByType('order');
@@ -7110,15 +7110,15 @@ window.printStats = function(dateRange) {
     const todayStr = now.toLocaleDateString();
     const yesterday = new Date(now); yesterday.setDate(yesterday.getDate() - 1);
     const yesterdayStr = yesterday.toLocaleDateString();
-    
+
     let titleDate = '';
     let filteredData = allTransactions.filter(t => {
         const d = t.rawDate.toLocaleDateString();
         if (dateRange === 'today') { titleDate = `Today (${todayStr})`; return d === todayStr; }
         if (dateRange === 'yesterday') { titleDate = `Yesterday (${yesterdayStr})`; return d === yesterdayStr; }
-        if (dateRange === 'month') { 
-            titleDate = `This Month (${now.getFullYear()}-${now.getMonth()+1})`; 
-            return t.rawDate.getMonth() === now.getMonth() && t.rawDate.getFullYear() === now.getFullYear(); 
+        if (dateRange === 'month') {
+            titleDate = `This Month (${now.getFullYear()}-${now.getMonth() + 1})`;
+            return t.rawDate.getMonth() === now.getMonth() && t.rawDate.getFullYear() === now.getFullYear();
         }
         titleDate = 'All History';
         return true;
@@ -7135,7 +7135,7 @@ window.printStats = function(dateRange) {
 
     // 2. 构建打印窗口 HTML
     const printWindow = window.open('', '', 'width=900,height=800');
-    
+
     const htmlContent = `
         <html>
         <head>
@@ -7203,7 +7203,7 @@ window.printStats = function(dateRange) {
                 <tbody>
                     ${filteredData.map(t => `
                         <tr>
-                            <td>${t.rawDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</td>
+                            <td>${t.rawDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</td>
                             <td>${t.receiptNo}</td>
                             <td>${t.type}<br><span style="font-size:10px;color:#666">${t.payment}</span></td>
                             <td>${t.customer}</td>
@@ -7237,9 +7237,9 @@ window.printStats = function(dateRange) {
 function showReceiptModal(config, order) {
     const modal = document.createElement('div');
     modal.className = 'modal-backdrop fixed inset-0 flex items-center justify-center z-[80] p-4 bg-black/50 backdrop-blur-sm';
-    
+
     const dateStr = new Date(order.completedAt || order.createdAt).toLocaleString();
-    
+
     // 计算小计
     const itemsHtml = order.items.map(item => `
         <div class="flex justify-between text-xs mb-1 font-mono">
@@ -7326,7 +7326,7 @@ function showReceiptModal(config, order) {
         `);
         win.document.close();
     });
-    
+
     // 点击背景关闭
     modal.addEventListener('click', (e) => {
         if (e.target === modal) modal.remove();
@@ -7345,10 +7345,10 @@ function showReceiptModal(config, item) {
     const isBooking = item.serviceName !== undefined;
     const date = new Date(item.createdAt || item.appointmentDate);
     const receiptNo = item.receiptNumber || `REC-${Date.now().toString().slice(-6)}`;
-    const itemsList = isBooking 
-        ? [{name: item.serviceName, price: item.servicePrice || item.totalAmount}] 
+    const itemsList = isBooking
+        ? [{ name: item.serviceName, price: item.servicePrice || item.totalAmount }]
         : item.items;
-    
+
     // 2. 打印专用函数
     const handlePrint = () => {
         const win = window.open('', '', 'width=400,height=600');
@@ -7377,7 +7377,7 @@ function showReceiptModal(config, item) {
                 <div>
                     ${itemsList.map(i => `
                         <div class="item">
-                            <span>${i.name} ${i.quantity ? 'x'+i.quantity : ''}</span>
+                            <span>${i.name} ${i.quantity ? 'x' + i.quantity : ''}</span>
                             <span>RM${parseFloat(i.price).toFixed(2)}</span>
                         </div>
                     `).join('')}
@@ -7411,7 +7411,7 @@ function showReceiptModal(config, item) {
     // 3. 网页版弹窗 (预览)
     const modal = document.createElement('div');
     modal.className = 'modal-backdrop fixed inset-0 flex items-center justify-center z-50 p-4 bg-black/50 backdrop-blur-sm';
-    
+
     modal.innerHTML = `
         <div class="bg-white w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden animate-scale-in">
             <div class="p-6 bg-gray-50 border-b text-center">
@@ -7447,11 +7447,11 @@ function showReceiptModal(config, item) {
     `;
 
     document.body.appendChild(modal);
-    
+
     document.getElementById('doPrintBtn').onclick = () => {
         handlePrint();
     };
-    
+
     modal.addEventListener('click', (e) => { if (e.target === modal) modal.remove(); });
 }
 
@@ -7459,24 +7459,24 @@ function showReceiptModal(config, item) {
 // 👇 [v1.3.6 (Beta) Fix 2] 智能撤单系统 (修复价格清零问题)
 // ==========================================
 window.handleRevertBooking = async (config, booking) => {
-    showConfirmModal(config, 
-        `⚠️ 撤销警告：\n\n您正在撤销一笔 [已完成] 的交易！\n\n系统将自动执行：\n1. 恢复商品库存\n2. 还原被合并的“自取订单”\n3. 作废旧流水单\n\n确定要继续吗？`, 
+    showConfirmModal(config,
+        `⚠️ 撤销警告：\n\n您正在撤销一笔 [已完成] 的交易！\n\n系统将自动执行：\n1. 恢复商品库存\n2. 还原被合并的“自取订单”\n3. 作废旧流水单\n\n确定要继续吗？`,
         async () => {
             showToast('⏳ 正在回滚数据...');
-            
+
             const allOrders = getDataByType('order');
             // 1. 寻找关联的订单
-            const relatedOrder = allOrders.find(o => 
-                (o.receiptNumber && o.receiptNumber === booking.receiptNumber) && 
+            const relatedOrder = allOrders.find(o =>
+                (o.receiptNumber && o.receiptNumber === booking.receiptNumber) &&
                 o.status === 'completed'
             );
 
             if (relatedOrder) {
                 const products = getDataByType('product');
-                
+
                 // A. 恢复库存 (Inventory Restock)
                 for (const item of relatedOrder.items) {
-                    if (item.type === 'product') { 
+                    if (item.type === 'product') {
                         const product = products.find(p => p.id === item.id) || products.find(p => p.name === item.name);
                         if (product) {
                             const currentStock = parseInt(product.stock || 0);
@@ -7491,7 +7491,7 @@ window.handleRevertBooking = async (config, booking) => {
                         const originalOrder = allOrders.find(o => o.id === mergedId);
                         if (originalOrder) {
                             // 把它变回 Pending，这样收银台又能扫到了
-                            await updateRecord(originalOrder, { 
+                            await updateRecord(originalOrder, {
                                 status: 'pending',
                                 pickupStatus: null,
                                 customerReceived: false
@@ -7501,8 +7501,8 @@ window.handleRevertBooking = async (config, booking) => {
                 }
 
                 // C. 作废当前大单
-                await updateRecord(relatedOrder, { 
-                    status: 'cancelled', 
+                await updateRecord(relatedOrder, {
+                    status: 'cancelled',
                     cancelReason: '预约撤销回滚 (Auto Reverted)'
                 });
             }
@@ -7513,14 +7513,14 @@ window.handleRevertBooking = async (config, booking) => {
             const restorePrice = originalService ? originalService.price : (booking.servicePrice || 0);
 
             // 3. 重置预约状态 (清空单号！)
-            await updateRecord(booking, { 
-                status: 'pending', 
+            await updateRecord(booking, {
+                status: 'pending',
                 completedAt: null,
                 receiptNumber: null, // 🔥 必须清空，否则下次结账不出新单号
-                totalAmount: parseFloat(restorePrice), 
+                totalAmount: parseFloat(restorePrice),
                 paymentMethod: null
             });
-            
+
             showToast('✅ 撤销成功！库存已恢复，合并单已还原。');
             renderApp();
         }
@@ -7533,7 +7533,7 @@ window.sendReceiptByWhatsApp = (phone, receiptNo, amount) => {
     // 格式化电话 (去掉非数字，确保 60 开头)
     let cleanPhone = phone.replace(/\D/g, '');
     if (cleanPhone.startsWith('0')) cleanPhone = '60' + cleanPhone.substring(1);
-    
+
     const text = `Hi! 感谢光临 GemBrow 💎\n您的收据: ${receiptNo}\n金额: RM${amount}\n期待下次为您服务！`;
     const url = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(text)}`;
     window.open(url, '_blank');
@@ -7545,16 +7545,16 @@ window.sendReceiptByWhatsApp = (phone, receiptNo, amount) => {
 function showNotificationModal() {
     const modal = document.createElement('div');
     modal.className = 'modal-backdrop fixed inset-0 flex items-center justify-center z-50 p-4 bg-black/50 backdrop-blur-sm';
-    
+
     // 1. 确定当前身份
     const currentUser = window.currentMode === 'owner' ? 'admin' : window.loggedInCustomerName;
-    
+
     // 2. 获取已读的系统消息ID列表
     const readSystemIds = JSON.parse(localStorage.getItem(`read_sys_notis_${currentUser}`) || '[]');
 
     // 3. 🔥 核心修复：更包容的筛选逻辑
     const allNotis = getDataByType('notification');
-    
+
     const myNotifications = allNotis.filter(n => {
         // A. 发给我的 (targetUser 匹配)
         if (n.targetUser === currentUser) return true;
@@ -7562,7 +7562,7 @@ function showNotificationModal() {
         if (n.targetUser === 'all') return true;
         // C. (兼容旧数据) 如果 targetUser 没写，且我是 admin，也显示
         if (!n.targetUser && currentUser === 'admin') return true;
-        
+
         return false;
     }).map(n => {
         // 计算已读状态
@@ -7570,7 +7570,7 @@ function showNotificationModal() {
         // 如果是系统消息，检查 ID 是否在已读列表里
         if (n.targetUser === 'all') {
             // 兼容 String/Number 类型的 ID 比较
-            isRead = readSystemIds.some(id => String(id) === String(n.id)); 
+            isRead = readSystemIds.some(id => String(id) === String(n.id));
         }
         return { ...n, isRead: isRead };
     });
@@ -7639,7 +7639,7 @@ function showNotificationModal() {
         let allData = JSON.parse(localStorage.getItem('gembrow_data') || '[]');
         // 兼容 ID 类型转换
         const target = allData.find(item => item.type === 'notification' && String(item.id) === String(id));
-        
+
         if (target) {
             // 标记已读逻辑
             if (target.targetUser === 'all') {
@@ -7654,9 +7654,9 @@ function showNotificationModal() {
                     localStorage.setItem('gembrow_data', JSON.stringify(allData));
                 }
             }
-            
+
             // 刷新界面
-            document.querySelector('.modal-backdrop').remove(); 
+            document.querySelector('.modal-backdrop').remove();
             showNotificationModal(); // 刷新列表状态
             renderApp(); // 刷新红点
 
@@ -7676,13 +7676,13 @@ function showNotificationModal() {
                 </div>
             `;
             document.body.appendChild(detailModal);
-            
+
             const closeDetail = () => detailModal.remove();
             document.getElementById('closeDetailBtn').addEventListener('click', closeDetail);
             detailModal.addEventListener('click', (e) => { if (e.target === detailModal) closeDetail(); });
         }
     };
-    
+
     // (window.deleteNotification 保持不变，无需修改)
 }
 
@@ -7748,10 +7748,10 @@ function renderAssetTabs(services, products, posts, config) {
         contentHtml = posts.map(p => `
             <div class="p-3 flex justify-between items-center bg-white border border-gray-100 rounded-xl mb-2 hover:shadow-sm transition-shadow">
                 <div class="flex items-center gap-3">
-                    ${p.imageUrl 
-                        ? `<img src="${p.imageUrl}" class="w-10 h-10 rounded object-cover bg-gray-100 border border-gray-200">` 
-                        : `<div class="w-10 h-10 rounded bg-blue-50 flex items-center justify-center text-lg">📢</div>`
-                    }
+                    ${p.imageUrl
+                ? `<img src="${p.imageUrl}" class="w-10 h-10 rounded object-cover bg-gray-100 border border-gray-200">`
+                : `<div class="w-10 h-10 rounded bg-blue-50 flex items-center justify-center text-lg">📢</div>`
+            }
                     <div class="flex-1 min-w-0">
                         <div class="text-sm font-bold text-gray-700 truncate w-32 md:w-48">${p.postTitle}</div>
                         <div class="text-[10px] text-gray-400 truncate w-32 md:w-48">${p.postContent}</div>
@@ -7769,9 +7769,9 @@ function renderAssetTabs(services, products, posts, config) {
         <div class="pt-2">
              <div class="flex justify-between items-center mb-4">
                 <div class="flex bg-gray-100 p-1 rounded-xl">
-                    <button onclick="window.assetTab='services'; renderApp()" class="px-4 py-2 rounded-lg text-xs font-bold transition-all ${activeTab==='services' ? 'bg-white text-pink-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}">服务</button>
-                    <button onclick="window.assetTab='products'; renderApp()" class="px-4 py-2 rounded-lg text-xs font-bold transition-all ${activeTab==='products' ? 'bg-white text-pink-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}">商品</button>
-                    <button onclick="window.assetTab='posts'; renderApp()" class="px-4 py-2 rounded-lg text-xs font-bold transition-all ${activeTab==='posts' ? 'bg-white text-pink-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}">动态</button>
+                    <button onclick="window.assetTab='services'; renderApp()" class="px-4 py-2 rounded-lg text-xs font-bold transition-all ${activeTab === 'services' ? 'bg-white text-pink-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}">服务</button>
+                    <button onclick="window.assetTab='products'; renderApp()" class="px-4 py-2 rounded-lg text-xs font-bold transition-all ${activeTab === 'products' ? 'bg-white text-pink-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}">商品</button>
+                    <button onclick="window.assetTab='posts'; renderApp()" class="px-4 py-2 rounded-lg text-xs font-bold transition-all ${activeTab === 'posts' ? 'bg-white text-pink-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}">动态</button>
                 </div>
                 
                 <button onclick="window.handleAddAsset()" 
@@ -7791,18 +7791,18 @@ function renderAssetTabs(services, products, posts, config) {
 // ==========================================
 // 👇 [v1.3.6 Fix] 统一资源添加入口
 // ==========================================
-window.handleAddAsset = function() {
+window.handleAddAsset = function () {
     const activeTab = window.assetTab || 'services';
-    
+
     if (activeTab === 'services') {
         // 调用漂亮的服务弹窗 (不传ID = 添加模式)
         showEditServiceModal(elementSdk.config);
     } else if (activeTab === 'products') {
         // 调用商品弹窗 (假设你还有 showEditProductModal，如果没有请告诉我)
-        if(typeof showEditProductModal === 'function') {
-             showEditProductModal(elementSdk.config);
+        if (typeof showEditProductModal === 'function') {
+            showEditProductModal(elementSdk.config);
         } else {
-             alert("商品弹窗函数缺失");
+            alert("商品弹窗函数缺失");
         }
     } else if (activeTab === 'posts') {
         // 🔥 调用刚才新加的漂亮动态弹窗
@@ -7813,18 +7813,18 @@ window.handleAddAsset = function() {
 // ==========================================
 // 👇 [v1.3.6 Fix] 通用删除处理器
 // ==========================================
-window.handleDeleteAsset = async function(type, id) {
-    const confirmMsg = 
+window.handleDeleteAsset = async function (type, id) {
+    const confirmMsg =
         type === 'service' ? "确定要删除这个服务吗？" :
-        type === 'product' ? "确定要下架这个商品吗？" :
-        "确定要删除这条动态吗？";
+            type === 'product' ? "确定要下架这个商品吗？" :
+                "确定要删除这条动态吗？";
 
     if (!confirm(confirmMsg)) return;
 
     let dataList = getDataByType(type);
     // 过滤掉要删除的那一项
     const newData = dataList.filter(item => item.id !== id);
-    
+
     // 更新 LocalStorage
     // 这里需要先获取全部数据，剔除旧的 type 数据，再合并新的
     const allData = JSON.parse(localStorage.getItem('gembrow_data') || '[]');
@@ -7836,9 +7836,9 @@ window.handleDeleteAsset = async function(type, id) {
         }
     }
     const otherData = allData.filter(d => d.type !== type);
-    
+
     localStorage.setItem('gembrow_data', JSON.stringify([...otherData, ...newData]));
-    
+
     showToast('✅ 删除成功');
     renderApp();
 };
@@ -7849,11 +7849,11 @@ window.handleDeleteAsset = async function(type, id) {
 function showOwnerAppointmentModal(config, booking) {
     const modal = document.createElement('div');
     modal.className = 'modal-backdrop fixed inset-0 flex items-center justify-center z-50 p-4 bg-black/50 backdrop-blur-sm';
-    
+
     // --- 1. 数据计算 ---
     const originalTime = booking.appointmentTime;
     const delay = booking.delayMinutes || 0;
-    
+
     // 计算显示时间 (含延迟)
     let displayTime = originalTime;
     if (delay > 0) {
@@ -7869,7 +7869,7 @@ function showOwnerAppointmentModal(config, booking) {
         const start = new Date(booking.startedAt);
         const end = booking.completedAt ? new Date(booking.completedAt) : new Date();
         const diffMins = Math.floor((end - start) / 1000 / 60);
-        
+
         if (diffMins < 60) {
             durationStr = `${diffMins} 分钟`;
         } else {
@@ -7888,7 +7888,7 @@ function showOwnerAppointmentModal(config, booking) {
     // 头部颜色
     let headerBg = 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)'; // 默认蓝 (待服务)
     let statusText = '⏳ 等待服务';
-    
+
     if (isServing) {
         headerBg = 'linear-gradient(135deg, #10b981 0%, #059669 100%)'; // 绿 (服务中)
         statusText = '💇‍♀️ 正在服务中';
@@ -8001,10 +8001,10 @@ function showOwnerAppointmentModal(config, booking) {
             }
 
             // 3. 结账 (待服务显示小按钮，服务中显示大按钮)
-            const cashierClass = isPending 
-                ? "py-3 rounded-xl bg-gray-800 text-white font-bold shadow-md hover:bg-black" 
+            const cashierClass = isPending
+                ? "py-3 rounded-xl bg-gray-800 text-white font-bold shadow-md hover:bg-black"
                 : "col-span-2 py-3 rounded-xl bg-gray-800 text-white font-bold shadow-md hover:bg-black text-lg animate-pulse";
-            
+
             const cashierText = isPending ? "💵 结账" : "✅ 结束服务 & 结账";
 
             html += `
@@ -8052,9 +8052,9 @@ function showOwnerAppointmentModal(config, booking) {
         const startBtn = document.getElementById('startServiceBtn');
         if (startBtn) startBtn.onclick = async () => {
             // 🔥 记录开始时间
-            await updateRecord(booking, { 
+            await updateRecord(booking, {
                 status: 'serving',
-                startedAt: new Date().toISOString() 
+                startedAt: new Date().toISOString()
             });
             modal.remove();
             renderApp();
@@ -8100,7 +8100,7 @@ function showOwnerAppointmentModal(config, booking) {
 
     // 初始渲染
     renderActions('default');
-    
+
     // 点击遮罩关闭
     modal.addEventListener('click', (e) => { if (e.target === modal) modal.remove(); });
 }
@@ -8121,7 +8121,7 @@ function initAutomation() {
         // 🔥 每次都读最新的 LocalStorage，防止内存数据滞后
         const freshData = JSON.parse(localStorage.getItem('gembrow_data') || '[]');
         const bookings = freshData.filter(item => item.type === 'booking');
-        
+
         const now = new Date();
         let hasChanges = false;
         let updatedBookings = [...bookings];
@@ -8130,7 +8130,7 @@ function initAutomation() {
             if (b.status !== 'pending') continue;
 
             const apptTime = new Date(`${b.appointmentDate}T${b.appointmentTime}`);
-            const diffMinutes = (now - apptTime) / 1000 / 60; 
+            const diffMinutes = (now - apptTime) / 1000 / 60;
 
             // 1. ⏰ 提前 10 分钟 (-10 到 -9 之间)
             // 只要没提醒过 (b.reminded10m 为空)，且时间到了，就发
@@ -8172,7 +8172,7 @@ function initAutomation() {
             if (currentView === 'manage' || currentView === 'mybookings') renderApp();
         }
 
-    }, 10000); 
+    }, 10000);
 }
 
 // 辅助：创建通知 (完全独立版)
@@ -8183,21 +8183,21 @@ function createNotification(targetUser, title, msg, opts = {}) {
         subtype: 'automation',
         dedupeKey: (opts && opts.dedupeKey) ? String(opts.dedupeKey) : null,
         id: 'noti_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9), // 🔥 独立ID
-        version: Date.now(), 
+        version: Date.now(),
         title: title,
         message: msg,
         targetUser: targetUser, // 明确指定接收人
         isRead: false,
         createdAt: new Date().toISOString()
     };
-    
+
     const allData = JSON.parse(localStorage.getItem('gembrow_data') || '[]');
     allData.push(noti);
     localStorage.setItem('gembrow_data', JSON.stringify(allData));
-    
+
     // 只有当前登录用户是接收者时，才弹窗
-    if (window.loggedInCustomerName === targetUser || 
-       (targetUser === 'admin' && window.currentMode === 'owner')) {
+    if (window.loggedInCustomerName === targetUser ||
+        (targetUser === 'admin' && window.currentMode === 'owner')) {
         showToast(`🔔 ${title}`);
     }
 }
@@ -8211,16 +8211,16 @@ function createNotification(targetUser, title, msg) {
         version: Date.now(), // 唯一ID
         title: title,
         message: msg,
-        targetUser: targetUser, 
+        targetUser: targetUser,
         isRead: false,
         createdAt: new Date().toISOString()
     };
-    
+
     // 读取 -> 插入 -> 保存
     const allData = JSON.parse(localStorage.getItem('gembrow_data') || '[]');
     allData.push(noti);
     localStorage.setItem('gembrow_data', JSON.stringify(allData));
-    
+
     // 如果当前登录的人就是目标，弹个 Toast
     if (window.loggedInCustomerName === targetUser || (targetUser === 'admin' && window.currentMode === 'owner')) {
         showToast(`🔔 ${title}`);
@@ -8239,10 +8239,10 @@ function openCropperModal(imageFile, callback, isRound = false) { // 👈 新增
     const reader = new FileReader();
     reader.onload = (e) => {
         const rawImgSrc = e.target.result;
-        
+
         const modal = document.createElement('div');
-        modal.className = 'fixed inset-0 z-[100] bg-black flex flex-col'; 
-        
+        modal.className = 'fixed inset-0 z-[100] bg-black flex flex-col';
+
         // 👇 只有 isRound 为 true 时，才注入圆形 CSS
         if (isRound) {
             const style = document.createElement('style');
@@ -8281,7 +8281,7 @@ function openCropperModal(imageFile, callback, isRound = false) { // 👈 新增
         const imageElement = document.getElementById('cropperImage');
         const cropper = new Cropper(imageElement, {
             aspectRatio: 1, // 始终保持 1:1 比例
-            viewMode: 1,    
+            viewMode: 1,
             dragMode: 'move',
             autoCropArea: 0.8,
             restore: false, guides: !isRound, // 方形时显示辅助线，圆形隐藏
@@ -8294,13 +8294,13 @@ function openCropperModal(imageFile, callback, isRound = false) { // 👈 新增
         document.getElementById('confirmCropBtn').addEventListener('click', () => {
             const btn = document.getElementById('confirmCropBtn');
             btn.innerText = '处理中...';
-            
+
             const canvas = cropper.getCroppedCanvas({
                 width: 800, height: 800,
                 imageSmoothingEnabled: true, imageSmoothingQuality: 'high',
             });
 
-            const croppedDataUrl = canvas.toDataURL('image/jpeg', 0.85); 
+            const croppedDataUrl = canvas.toDataURL('image/jpeg', 0.85);
             callback(croppedDataUrl);
             modal.remove();
         });
@@ -8316,11 +8316,11 @@ function handleFileWithCrop(file, inputId, previewId, placeholderId, isRound = f
         const input = document.getElementById(inputId);
         const img = document.getElementById(previewId);
         const ph = document.getElementById(placeholderId);
-        
+
         if (input) input.value = croppedBase64;
         if (img) { img.src = croppedBase64; img.style.display = 'block'; }
         if (ph) { ph.style.display = 'none'; }
-        
+
         const uploadText = img?.parentElement?.querySelector('p');
         if (uploadText) uploadText.style.display = 'none';
 
@@ -8331,7 +8331,7 @@ function handleFileWithCrop(file, inputId, previewId, placeholderId, isRound = f
 // ==========================================
 // 👇 [v1.3.1-5] 头像上传与压缩处理 (新增)
 // ==========================================
-window.handleAvatarUpload = function(input) {
+window.handleAvatarUpload = function (input) {
     const file = input.files[0];
     if (!file) return;
 
@@ -8344,17 +8344,17 @@ window.handleAvatarUpload = function(input) {
     showToast('⏳ 正在处理头像...');
 
     const reader = new FileReader();
-    reader.onload = function(e) {
+    reader.onload = function (e) {
         const img = new Image();
         img.src = e.target.result;
-        
-        img.onload = function() {
+
+        img.onload = function () {
             // 2. 创建画布进行压缩 (Canvas)
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
-            
+
             // 设置头像尺寸 (300x300 足够清晰，且文件很小)
-            const MAX_SIZE = 300; 
+            const MAX_SIZE = 300;
             let width = img.width;
             let height = img.height;
 
@@ -8365,7 +8365,7 @@ window.handleAvatarUpload = function(input) {
 
             canvas.width = MAX_SIZE;
             canvas.height = MAX_SIZE;
-            
+
             // 3. 绘制图片 (裁剪正方形)
             ctx.drawImage(img, sx, sy, minDim, minDim, 0, 0, MAX_SIZE, MAX_SIZE);
 
@@ -8376,7 +8376,7 @@ window.handleAvatarUpload = function(input) {
             // 注意：这里我们使用 updateRecord 确保数据同步
             const customers = getDataByType('customer_account');
             const me = customers.find(c => c.username === loggedInCustomerName);
-            
+
             if (me) {
                 // 更新字段：avatar (统一新字段名)
                 updateRecord(me, { avatar: compressedDataUrl }).then(() => {
@@ -8397,7 +8397,7 @@ window.handleAvatarUpload = function(input) {
 // ==========================================
 function checkAndCreateSystemNotifications() {
     const appChangelog = [
-    {
+        {
             version: "v1.3.6 (正式版)",
             date: "2026-01-07",
             title: "🤖 自动化大脑 & 体验升级",
@@ -8408,66 +8408,66 @@ function checkAndCreateSystemNotifications() {
                 "🧾 <b>完美打印</b>：修复打印偏移，支持补打历史收据，店名动态跟随设置。"
             ]
         },
-    {
-        version: "v1.3.6 (Beta)",
-        date: "2026-01-05",
-        title: "💳 收银台逻辑闭环 (Cashier Logic)",
-        features: [
-            "💸 <b>智能收银流程</b>：重构 TNG 支付逻辑，选择 -> 扫码 -> 确认，流程更严谨。",
-            "💊 <b>后悔药 Pro</b>：撤销订单时自动回滚库存、作废旧单据、还原合并单状态。",
-            "📊 <b>精准财务</b>：统计报表新增“防重算”防火墙，自动过滤无效单据。",
-            "🧾 <b>单号关联</b>：修复了预约单据没有正确关联流水号的问题。"
-        ]
-    },
-    {
-        version: "v1.3.5",
-        date: "2026-01-04",
-        title: "🛒 零售与支付闭环 (Retail & Payment)",
-        features: [
-            "📱 <b>零售收银升级</b>：优化 Pad 端布局，左侧选品、右侧结算，支持分类筛选。",
-            "📦 <b>真实库存扣减</b>：无论是零售还是发货，系统现在会自动扣除对应商品的库存。",
-            "🖨️ <b>热敏小票</b>：新增标准的 80mm 商业收据样式，支持新窗口静默打印。",
-            "📤 <b>凭证上传</b>：顾客选择转账/TNG时，可以上传支付截图供商家核销。"
-        ]
-    },
-    {
-        version: "v1.3.3",
-        date: "2026-01-02",
-        title: "🎨 颜值与交互进化 (UI/UX Evolution)",
-        features: [
-            "👤 <b>头像自定义</b>：顾客与店长均可点击头像上传个性化照片，系统自动智能压缩。",
-            "📱 <b>灵动菜单</b>：全新顶部下滑式菜单，单手操作更丝滑。",
-            "🧩 <b>界面修复</b>：修复 Google 翻译/WhatsApp 按钮遮挡裁剪页面的问题。"
-        ]
-    },
-    {
-        version: "v1.3.0",
-        date: "2025-12-31",
-        title: "🚀 智能商业版 (Smart Business)",
-        features: [
-            "💰 <b>智能收银台</b>：支持关联库存商品、自动扣减库存。",
-            "🔗 <b>全渠道同步</b>：收银时自动合并顾客的“购物车”和“待处理订单”。"
-        ]
-    }
-];
+        {
+            version: "v1.3.6 (Beta)",
+            date: "2026-01-05",
+            title: "💳 收银台逻辑闭环 (Cashier Logic)",
+            features: [
+                "💸 <b>智能收银流程</b>：重构 TNG 支付逻辑，选择 -> 扫码 -> 确认，流程更严谨。",
+                "💊 <b>后悔药 Pro</b>：撤销订单时自动回滚库存、作废旧单据、还原合并单状态。",
+                "📊 <b>精准财务</b>：统计报表新增“防重算”防火墙，自动过滤无效单据。",
+                "🧾 <b>单号关联</b>：修复了预约单据没有正确关联流水号的问题。"
+            ]
+        },
+        {
+            version: "v1.3.5",
+            date: "2026-01-04",
+            title: "🛒 零售与支付闭环 (Retail & Payment)",
+            features: [
+                "📱 <b>零售收银升级</b>：优化 Pad 端布局，左侧选品、右侧结算，支持分类筛选。",
+                "📦 <b>真实库存扣减</b>：无论是零售还是发货，系统现在会自动扣除对应商品的库存。",
+                "🖨️ <b>热敏小票</b>：新增标准的 80mm 商业收据样式，支持新窗口静默打印。",
+                "📤 <b>凭证上传</b>：顾客选择转账/TNG时，可以上传支付截图供商家核销。"
+            ]
+        },
+        {
+            version: "v1.3.3",
+            date: "2026-01-02",
+            title: "🎨 颜值与交互进化 (UI/UX Evolution)",
+            features: [
+                "👤 <b>头像自定义</b>：顾客与店长均可点击头像上传个性化照片，系统自动智能压缩。",
+                "📱 <b>灵动菜单</b>：全新顶部下滑式菜单，单手操作更丝滑。",
+                "🧩 <b>界面修复</b>：修复 Google 翻译/WhatsApp 按钮遮挡裁剪页面的问题。"
+            ]
+        },
+        {
+            version: "v1.3.0",
+            date: "2025-12-31",
+            title: "🚀 智能商业版 (Smart Business)",
+            features: [
+                "💰 <b>智能收银台</b>：支持关联库存商品、自动扣减库存。",
+                "🔗 <b>全渠道同步</b>：收银时自动合并顾客的“购物车”和“待处理订单”。"
+            ]
+        }
+    ];
 
-window.appChangelog = appChangelog; 
+    window.appChangelog = appChangelog;
 
     const latestVersion = appChangelog[0];
     const notifications = getDataByType('notification');
-    
+
     // 🔍 检查是否已发送 (这次我们稍微放宽条件，确保你调试时能看到)
     // 如果你想强制再看一次，可以手动把 hasNotified 设为 false
-    const hasNotified = notifications.some(n => 
-        n.category === 'system' && 
+    const hasNotified = notifications.some(n =>
+        n.category === 'system' &&
         n.version === latestVersion.version
     );
 
     // 🔥 调试模式：即使发过了，为了让你看到，我们这里暂时允许重发
     // 正式上线后把 (|| true) 去掉即可
-    if (!hasNotified) { 
+    if (!hasNotified) {
         console.log(`🚀 推送新版本通知: ${latestVersion.version}`);
-        
+
         const newNoti = {
             type: 'notification',
             category: 'system',
@@ -8475,10 +8475,10 @@ window.appChangelog = appChangelog;
             id: 'sys_' + Date.now(),
             version: latestVersion.version,
             title: `🚀 系统升级: ${latestVersion.version}`,
-            message: `更新内容：\n${latestVersion.features.map(f => '• ' + f.replace(/<[^>]*>/g, '')).join('\n')}`, 
-            
+            message: `更新内容：\n${latestVersion.features.map(f => '• ' + f.replace(/<[^>]*>/g, '')).join('\n')}`,
+
             targetUser: 'all', // 🔥 核心修改：发给所有人
-            
+
             isRead: false,
             createdAt: new Date().toISOString()
         };
@@ -8486,7 +8486,7 @@ window.appChangelog = appChangelog;
         let allData = JSON.parse(localStorage.getItem('gembrow_data') || '[]');
         allData.push(newNoti);
         localStorage.setItem('gembrow_data', JSON.stringify(allData));
-        
+
         renderApp();
         showToast(`🎉 系统已更新至 ${latestVersion.version}`);
     }
@@ -8552,18 +8552,18 @@ function cleanupDuplicateNotifications() {
     // 2. 如果有垃圾，执行清理
     if (duplicates.length > 0) {
         console.warn(`🚨 发现 ${duplicates.length} 条重复通知，正在执行清理...`);
-        
+
         // 直接操作底层数据，避免触发 renderApp
         const cleanList = notifications.filter(n => !duplicates.includes(n));
-        
+
         // 强制写回 LocalStorage (不刷新页面)
         const allData = JSON.parse(localStorage.getItem('gembrow_data') || '[]');
         const otherData = allData.filter(d => d.type !== 'notification');
         const finalData = [...otherData, ...cleanList];
-        
+
         localStorage.setItem('gembrow_data', JSON.stringify(finalData));
         console.log("✅ 清理完成！垃圾数据已移除。");
-        
+
         // 只有清理了才刷新一次
         renderApp();
         showToast(`已自动清理 ${duplicates.length} 条冗余消息`);
@@ -8574,9 +8574,9 @@ function showChangelogModal(config, viewMode = 'latest') {
     const modal = document.createElement('div');
     modal.className = 'modal-backdrop fixed inset-0 flex items-center justify-center z-[100] p-4';
     modal.style.background = 'rgba(0,0,0,0.6)'; // 半透明黑底
-    
+
     let contentHtml = '';
-    
+
     if (viewMode === 'latest') {
         // --- 显示最新版本 ---
         const latest = appChangelog[0];
@@ -8646,7 +8646,7 @@ function showChangelogModal(config, viewMode = 'latest') {
 
     // 绑定事件
     document.getElementById('closeChangelogBtn').addEventListener('click', () => modal.remove());
-    
+
     // 切换到历史记录
     const historyBtn = document.getElementById('viewHistoryBtn');
     if (historyBtn) {
@@ -8667,10 +8667,10 @@ function showChangelogModal(config, viewMode = 'latest') {
 function handleVersionClick(config, version) {
     // 1. 打开更新日志
     showChangelogModal(config);
-    
+
     // 2. 记录“已读”状态到本地存储
     localStorage.setItem('gembrow_last_seen_version', version);
-    
+
     // 3. 视觉上立刻隐藏红点 (无需刷新)
     const badge = document.getElementById('versionBadge');
     if (badge) badge.remove();
@@ -8682,17 +8682,17 @@ function handleVersionClick(config, version) {
 initApp().then(() => {
     // 1. 初始化全局挂件 (WhatsApp, Google翻译)
     if (typeof initGlobalWidgets === 'function') initGlobalWidgets();
-    
+
     // 2. 初始化超时登出 (刚才补上的函数)
-    if (typeof initSessionTimeout === 'function') initSessionTimeout(); 
-    
+    if (typeof initSessionTimeout === 'function') initSessionTimeout();
+
     // 3. 启动自动化大脑 (10s检查一次)
-    if (typeof initAutomation === 'function') initAutomation();      
+    if (typeof initAutomation === 'function') initAutomation();
 
     // 4. 延迟检查系统更新
     setTimeout(() => {
         if (typeof cleanupDuplicateNotifications === 'function') cleanupDuplicateNotifications();
-        if (typeof checkAndCreateSystemNotifications === 'function') checkAndCreateSystemNotifications(); 
+        if (typeof checkAndCreateSystemNotifications === 'function') checkAndCreateSystemNotifications();
     }, 1000);
 });
 

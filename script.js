@@ -1,4 +1,4 @@
-// === 模拟 SDK (放在 script.js 最前面) ===
+﻿// === 模拟 SDK (放在 script.js 最前面) ===
 
 // 1. 模拟配置 SDK
 window.elementSdk = {
@@ -949,7 +949,7 @@ function renderOwnerView(config, services, bookings, posts, customers) {
     // 1. 预约筛选
     let filteredBookings = bookings.filter(b => {
         if (window.filterStatus === 'all') return true;
-        if (window.filterStatus === 'pending') return b.status === 'pending' || b.status === 'serving';
+        if (window.filterStatus === 'pending') return b.status === 'pending' || b.status === 'serving' || b.status === 'finished';
         return b.status === window.filterStatus;
     }).filter(b => {
         if (!window.searchQuery) return true;
@@ -1438,7 +1438,7 @@ function renderSettings(config) {
                 ${(() => {
             const currentVersion = 'v1.3.6 正式版';
             // 检查是否已读
-            const lastSeen = localStorage.getItem('BeautyLoop_last_seen_version');
+            const lastSeen = localStorage.getItem('BlythraLoop_last_seen_version');
             const showBadge = lastSeen !== currentVersion;
 
             return `
@@ -7217,7 +7217,7 @@ window.printStats = function (dateRange) {
 
             <div class="footer">
                 -- End of Report --<br>
-                Powered by BeautyLoop SaaS
+                Powered by BlythraLoop SaaS
             </div>
 
             <script>
@@ -7253,7 +7253,7 @@ function showReceiptModal(config, order) {
             
             <div id="receiptContent" class="p-6 bg-white text-gray-800">
                 <div class="text-center border-b-2 border-dashed border-gray-300 pb-4 mb-4">
-                    <h2 class="font-bold text-xl uppercase tracking-wider mb-1">${config.app_title || 'BeautyLoop'}</h2>
+                    <h2 class="font-bold text-xl uppercase tracking-wider mb-1">${config.app_title || 'BlythraLoop'}</h2>
                     <p class="text-[10px] text-gray-500">Sales Receipt</p>
                     <p class="text-[10px] text-gray-500 mt-1">${dateStr}</p>
                     <p class="text-[10px] font-mono mt-1">NO: ${order.receiptNumber}</p>
@@ -7283,7 +7283,7 @@ function showReceiptModal(config, order) {
 
                 <div class="text-center text-[10px] text-gray-400">
                     <p>Thank you for visiting!</p>
-                    <p>Powered by BeautyLoop SaaS</p>
+                    <p>Powered by BlythraLoop SaaS</p>
                 </div>
             </div>
 
@@ -7940,6 +7940,7 @@ function showOwnerAppointmentModal(config, booking) {
     // --- 2. 状态判断 (UI 区分) ---
     const isPending = booking.status === 'pending';
     const isServing = booking.status === 'serving';
+    const isFinished = booking.status === 'finished'; // 🔥 新状态：服务已结束 (待结账)
     const isCompleted = booking.status === 'completed';
     const isCancelled = booking.status === 'cancelled';
 
@@ -7950,6 +7951,9 @@ function showOwnerAppointmentModal(config, booking) {
     if (isServing) {
         headerBg = 'linear-gradient(135deg, #10b981 0%, #059669 100%)'; // 绿 (服务中)
         statusText = '💇‍♀️ 正在服务中';
+    } else if (isFinished) {
+        headerBg = 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)'; // 紫 (服务结束，待结账)
+        statusText = '⏳ 服务已结束 (待结账)';
     } else if (isCompleted) {
         headerBg = 'linear-gradient(135deg, #64748b 0%, #475569 100%)'; // 灰 (已完成)
         statusText = '✅ 服务已完成';
@@ -7985,7 +7989,7 @@ function showOwnerAppointmentModal(config, booking) {
                     <span class="font-bold ${delay > 0 ? 'text-red-500' : 'text-gray-800'}">${displayTime}</span>
                 </div>
                 
-                ${(isServing || isCompleted) ? `
+                ${(isServing || isFinished || isCompleted) ? `
                     <div class="flex justify-between border-b border-gray-100 pb-3">
                         <span class="text-gray-500 text-sm">服务耗时</span>
                         <span class="font-bold text-blue-600">${durationStr}</span>
@@ -8037,10 +8041,10 @@ function showOwnerAppointmentModal(config, booking) {
                 <button onclick="window.resetActions()" class="w-full py-2 text-xs text-gray-400 hover:text-gray-600">返回</button>
             `;
         } else {
-            // === 默认模式 (待服务 / 服务中) ===
+            // === 默认模式 (待服务 / 服务中 / 服务结束) ===
             html = `<div class="grid grid-cols-2 gap-3">`;
 
-            // 1. 开始服务 (仅待服务显示)
+            // 1. 开始服务 (仅待服务显示, status == 'pending')
             if (isPending) {
                 html += `
                     <button id="startServiceBtn" class="col-span-2 py-3 rounded-xl bg-green-500 text-white font-bold shadow-md hover:bg-green-600 flex items-center justify-center gap-2">
@@ -8049,7 +8053,16 @@ function showOwnerAppointmentModal(config, booking) {
                 `;
             }
 
-            // 2. 延迟 (仅待服务显示，服务中隐藏)
+            // 1.5 结束服务 (仅服务中显示, status == 'serving')
+            if (isServing) {
+                html += `
+                    <button id="endServiceBtn" class="col-span-2 py-3 rounded-xl bg-purple-500 text-white font-bold shadow-md hover:bg-purple-600 flex items-center justify-center gap-2">
+                        ⏹️ 结束服务
+                    </button>
+                `;
+            }
+
+            // 2. 延迟 (仅待服务显示)
             if (isPending) {
                 html += `
                     <button id="showDelayOptionsBtn" class="py-3 rounded-xl bg-white border border-gray-200 text-gray-700 font-bold hover:bg-yellow-50 hover:text-yellow-600 hover:border-yellow-200 transition-all">
@@ -8058,15 +8071,32 @@ function showOwnerAppointmentModal(config, booking) {
                 `;
             }
 
-            // 3. 结账 (待服务显示小按钮，服务中显示大按钮)
-            const cashierClass = isPending
-                ? "py-3 rounded-xl bg-gray-800 text-white font-bold shadow-md hover:bg-black"
-                : "col-span-2 py-3 rounded-xl bg-gray-800 text-white font-bold shadow-md hover:bg-black text-lg animate-pulse";
+            // 3. 结账 (待服务: 小按钮; 服务中: 灰色; 结束后: 大按钮)
+            // 🔥 [Mod] 逻辑调整：
+            // - pending: 允许直接结账（万一要快速结账）
+            // - serving: 灰色禁用 (必须先点结束)
+            // - finished: 亮起，允许结账
 
-            const cashierText = isPending ? "💵 结账" : "✅ 结束服务 & 结账";
+            let cashierClass = "";
+            let cashierText = "💵 结账";
+            let disabledAttr = "";
+
+            if (isServing) {
+                // 灰色禁用
+                cashierClass = "col-span-2 py-3 rounded-xl bg-gray-400 text-white font-bold cursor-not-allowed opacity-50";
+                cashierText = "✅ 服务进行中 (请先结束服务)";
+                disabledAttr = "disabled";
+            } else if (isFinished) {
+                // 亮起，大按钮
+                cashierClass = "col-span-2 py-3 rounded-xl bg-gray-800 text-white font-bold shadow-md hover:bg-black text-lg animate-pulse";
+                cashierText = "✅ 立即结账";
+            } else {
+                // Pending (小按钮)
+                cashierClass = "py-3 rounded-xl bg-gray-800 text-white font-bold shadow-md hover:bg-black";
+            }
 
             html += `
-                <button id="cashierBtn" class="${cashierClass}">
+                <button id="cashierBtn" class="${cashierClass}" ${disabledAttr}>
                     ${cashierText}
                 </button>
             `;
@@ -8109,14 +8139,31 @@ function showOwnerAppointmentModal(config, booking) {
         // 开始服务
         const startBtn = document.getElementById('startServiceBtn');
         if (startBtn) startBtn.onclick = async () => {
-            // 🔥 记录开始时间
             await updateRecord(booking, {
                 status: 'serving',
                 startedAt: new Date().toISOString()
             });
             modal.remove();
-            renderApp();
+            renderApp(); // 列表会刷新，但还是在 pending tab (因为 filter 包含 serving)
+            // 重新打开 modal 方便用户看
+            const updatedBooking = getDataByType('booking').find(b => b.id === booking.id);
+            if (updatedBooking) showOwnerAppointmentModal(config, updatedBooking);
             showToast('✅ 开始计时！服务进行中...');
+        };
+
+        // 结束服务 (NEW)
+        const endServiceBtn = document.getElementById('endServiceBtn');
+        if (endServiceBtn) endServiceBtn.onclick = async () => {
+            await updateRecord(booking, {
+                status: 'finished', // 服务结束，待结账
+                serviceEndedAt: new Date().toISOString()
+            });
+            modal.remove();
+            renderApp();
+            // 重新打开 modal，此时变成了 finished 状态
+            const updatedBooking = getDataByType('booking').find(b => b.id === booking.id);
+            if (updatedBooking) showOwnerAppointmentModal(config, updatedBooking);
+            showToast('⏹️ 服务已结束，请结账');
         };
 
         // 结账 (结束服务)
@@ -8167,70 +8214,129 @@ function showOwnerAppointmentModal(config, booking) {
 // 👇 [v1.3.6 Final Fix] 自动化大脑 (防重发/防连击)
 // ==========================================
 function initAutomation() {
-    console.log("🧠 自动化大脑已启动 (10s 轮询)...");
-
+    console.log("🧠 自动化大脑已启动 (5s 轮询)...");
 
     // 🔥 [Fix] 防止重复启动（避免通知连击）
     if (window.__automationIntervalId) {
         console.log('🧠 自动化大脑已在运行，跳过重复启动');
         return;
     }
+
     window.__automationIntervalId = setInterval(async () => {
-        // 🔥 每次都读最新的 LocalStorage，防止内存数据滞后
+        // 🔥 每次都读最新的 LocalStorage
         const freshData = JSON.parse(localStorage.getItem('gembrow_data') || '[]');
         const bookings = freshData.filter(item => item.type === 'booking');
 
-        const now = new Date();
+        const newNotifications = [];
         let hasChanges = false;
         let updatedBookings = [...bookings];
+        const now = new Date();
+
+        // Helper: Create Notification
+        const addNoti = (targetUser, title, msg, dedupeKey) => {
+            if (dedupeKey) {
+                const key = String(dedupeKey);
+                // Check DB
+                if (freshData.some(n => n.type === 'notification' && String(n.dedupeKey || '') === key)) return;
+                // Check Batch
+                if (newNotifications.some(n => String(n.dedupeKey || '') === key)) return;
+            }
+
+            const noti = {
+                type: 'notification',
+                category: 'alert',
+                subtype: 'automation',
+                dedupeKey: dedupeKey ? String(dedupeKey) : null,
+                id: 'noti_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+                version: Date.now(),
+                title: title,
+                message: msg,
+                targetUser: targetUser,
+                isRead: false,
+                createdAt: new Date().toISOString()
+            };
+            newNotifications.push(noti);
+
+            // Show Toast
+            if (window.loggedInCustomerName === targetUser ||
+                (targetUser === 'admin' && window.currentMode === 'owner')) {
+                showToast(`🔔 ${title}`);
+                console.log(`🔔 触发通知: ${title} -> ${targetUser}`);
+            }
+        };
 
         for (let b of updatedBookings) {
             if (b.status !== 'pending') continue;
 
-            const apptTime = new Date(`${b.appointmentDate}T${b.appointmentTime}`);
-            const diffMinutes = (now - apptTime) / 1000 / 60;
+            // 🔥 [Fix] 健壮的日期解析 (Robust Date Parsing)
+            // 避免 new Date("2023-10-10T10:00") 在某些浏览器解析为 UTC 或失败
+            try {
+                if (!b.appointmentDate || !b.appointmentTime) continue;
 
-            // 1. ⏰ 提前 10 分钟 (-10 到 -9 之间)
-            // 只要没提醒过 (b.reminded10m 为空)，且时间到了，就发
-            if (diffMinutes >= -10 && diffMinutes < -8 && !b.reminded10m) {
-                createNotification(b.customerName, '⏰ 预约提醒', `亲，您的预约将在 10 分钟后开始，请准备。`, { dedupeKey: `bk_${b.id}_remind10_cust` });
-                createNotification('admin', '⏰ 接待提醒', `顾客 ${b.customerName} 将在 10 分钟后到达。`, { dedupeKey: `bk_${b.id}_remind10_admin` });
-                b.reminded10m = true;
-                hasChanges = true;
-            }
+                const [year, month, day] = b.appointmentDate.split('-').map(Number);
+                const [hour, minute] = b.appointmentTime.split(':').map(Number);
 
-            // 2. 🐢 迟到 15 分钟 (15 到 16 之间)
-            if (diffMinutes >= 15 && diffMinutes < 17 && !b.markedLate15m) {
-                createNotification(b.customerName, '🐢 迟到提醒', `您已迟到 15 分钟，请尽快到达以免被取消。`, { dedupeKey: `bk_${b.id}_late15_cust` });
-                createNotification('admin', '🐢 顾客迟到', `${b.customerName} 已迟到 15 分钟 (自动标记)。`, { dedupeKey: `bk_${b.id}_late15_admin` });
-                b.markedLate15m = true;
-                if (!b.delayMinutes) b.delayMinutes = 15;
-                hasChanges = true;
-            }
+                // 本地时间构造 (Month is 0-indexed)
+                const apptTime = new Date(year, month - 1, day, hour, minute, 0);
 
-            // 3. 💀 严重超时 30 分钟 (30 到 32 之间)
-            if (diffMinutes >= 30 && diffMinutes < 32 && !b.markedSevere30m) {
-                createNotification(b.customerName, '🚫 预约已取消', `因迟到超过 30 分钟，系统已自动取消您的预约。`, { dedupeKey: `bk_${b.id}_cancel30_cust` });
-                createNotification('admin', '🚫 自动取消', `${b.customerName} 迟到超 30 分钟，系统已执行取消。`, { dedupeKey: `bk_${b.id}_cancel30_admin` });
-                b.status = 'cancelled';
-                b.cancelReason = '系统自动取消 (迟到 > 30m)';
-                b.cancelledAt = new Date().toISOString();
-                b.markedSevere30m = true;
-                hasChanges = true;
+                // 计算差异 (分钟)
+                // Past = Positive (Now > Appt), Future = Negative (Now < Appt)
+                // wait... (now - apptTime)
+                // if now=10:00, appt=10:10. diff = -10 min. (Future)
+                // if now=10:15, appt=10:00. diff = +15 min. (Past/Late)
+                const diffMinutes = (now - apptTime) / 1000 / 60;
+
+                // Debug log (只在接近时间点时打印，避免刷屏)
+                if (Math.abs(diffMinutes) < 60) {
+                    // console.log(`🔍 检查预约 [${b.customerName}]: 时间=${b.appointmentTime}, 差距=${diffMinutes.toFixed(1)}分`);
+                }
+
+                // 1. ⏰ 提前 10 分钟 (-10 到 -8 之间)
+                if (diffMinutes >= -10 && diffMinutes < -8 && !b.reminded10m) {
+                    addNoti(b.customerName, '⏰ 预约提醒', `亲，您的预约将在 10 分钟后开始，请准备。`, `bk_${b.id}_remind10_cust`);
+                    addNoti('admin', '⏰ 接待提醒', `顾客 ${b.customerName} 将在 10 分钟后到达。`, `bk_${b.id}_remind10_admin`);
+                    b.reminded10m = true;
+                    hasChanges = true;
+                    console.log(`✅ 标记 10分钟提醒: ${b.customerName}`);
+                }
+
+                // 2. 🐢 迟到 15 分钟 (15 到 17 之间)
+                if (diffMinutes >= 15 && diffMinutes < 17 && !b.markedLate15m) {
+                    addNoti(b.customerName, '🐢 迟到提醒', `您已迟到 15 分钟，请尽快到达以免被取消。`, `bk_${b.id}_late15_cust`);
+                    addNoti('admin', '🐢 顾客迟到', `${b.customerName} 已迟到 15 分钟 (自动标记)。`, `bk_${b.id}_late15_admin`);
+                    b.markedLate15m = true;
+                    if (!b.delayMinutes) b.delayMinutes = 15;
+                    hasChanges = true;
+                    console.log(`✅ 标记 15分钟迟到: ${b.customerName}`);
+                }
+
+                // 3. 💀 严重超时 30 分钟 (30 到 32 之间)
+                if (diffMinutes >= 30 && diffMinutes < 32 && !b.markedSevere30m) {
+                    addNoti(b.customerName, '🚫 预约已取消', `因迟到超过 30 分钟，系统已自动取消您的预约。`, `bk_${b.id}_cancel30_cust`);
+                    addNoti('admin', '🚫 自动取消', `${b.customerName} 迟到超 30 分钟，系统已执行取消。`, `bk_${b.id}_cancel30_admin`);
+                    b.status = 'cancelled';
+                    b.cancelReason = '系统自动取消 (迟到 > 30m)';
+                    b.cancelledAt = new Date().toISOString();
+                    b.markedSevere30m = true;
+                    hasChanges = true;
+                    console.log(`✅ 执行 30分钟自动取消: ${b.customerName}`);
+                }
+            } catch (e) {
+                console.error("❌ 自动化日期解析错误:", e);
             }
         }
 
-        if (hasChanges) {
-            // 保存回 LocalStorage
+        if (hasChanges || newNotifications.length > 0) {
             const otherData = freshData.filter(d => d.type !== 'booking');
-            localStorage.setItem('gembrow_data', JSON.stringify([...otherData, ...updatedBookings]));
-            // 刷新当前内存
-            allData = [...otherData, ...updatedBookings];
-            // 刷新界面
+            const finalData = [...otherData, ...updatedBookings, ...newNotifications];
+
+            localStorage.setItem('gembrow_data', JSON.stringify(finalData));
+
+            allData = finalData;
             if (currentView === 'manage' || currentView === 'mybookings') renderApp();
         }
 
-    }, 10000);
+    }, 5000); // 5秒轮询
 }
 
 // 辅助：创建通知 (完全独立版)

@@ -1,18 +1,78 @@
 ﻿<!DOCTYPE html>
 <html lang="zh-CN" class="h-full">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gem Brow Beauty</title>
+  <title>BlythraLoop Admin</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&amp;family=Lato:wght@300;400;600&amp;display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&amp;family=Lato:wght@300;400;600&amp;display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="style.css">
-  <style>@view-transition { navigation: auto; }</style>
+  <style>
+    @view-transition {
+      navigation: auto;
+    }
+  </style>
   <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 </head>
+
 <body class="h-full">
   <div id="app" class="h-full w-full overflow-auto"></div>
+  <script src="admin/manage.js"></script>
+  <script src="customer/booking.js"></script>
   <script src="script.js"></script>
+  <script src="logi.js"></script>
 </body>
+
+</html>
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>BlythraLoop | Login</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+  <link href="./style.css" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Lato:wght@300;400;700&display=swap"
+    rel="stylesheet">
+</head>
+
+<body class="bg-gray-50">
+  <div id="app"></div>
+
+  <script src="./script.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      await window.initAppCore();
+
+      // 检查自动登录
+      const session = JSON.parse(sessionStorage.getItem('gembrow_session') || '{}');
+      if (session.mode === 'owner' && session.expiry > Date.now()) {
+        window.location.href = './admin/index.html';
+        return;
+      } else if (session.mode === 'customer' && session.expiry > Date.now()) {
+        window.location.href = './customer/index.html';
+        return;
+      }
+
+      // 渲染登录页 (把原 script.js 里的 renderLoginPage 代码放这里，或者单独提取一个 login.js)
+      renderLogin();
+    });
+
+    function renderLogin() {
+      // ... 把原 script.js 里的 renderLoginPage() 内容复制过来
+      // 登录成功后跳转：
+      // window.location.href = './admin/index.html'; (老板)
+      // window.location.href = './customer/index.html'; (顾客)
+    }
+  </script>
+</body>
+
 </html>

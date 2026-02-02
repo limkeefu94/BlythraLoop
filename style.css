@@ -14,8 +14,10 @@ body {
 
 /* 模态框背景 - 半透明深色背景 */
 .modal-backdrop {
-    background-color: rgba(74, 30, 58, 0.7);  /* 深紫色半透明 */
-    backdrop-filter: blur(4px);                /* 背景模糊效果 */
+    background-color: rgba(74, 30, 58, 0.7);
+    /* 深紫色半透明 */
+    backdrop-filter: blur(4px);
+    /* 背景模糊效果 */
 }
 
 /* ==================== 提示框 (Toast) 动画 ==================== */
@@ -31,6 +33,7 @@ body {
         transform: translateY(-100%);
         opacity: 0;
     }
+
     to {
         transform: translateY(0);
         opacity: 1;
@@ -47,9 +50,12 @@ body {
 
 /* 服务卡片悬停效果 */
 .service-card:hover {
-    transform: translateY(-8px);                              /* 向上移动 8px */
-    box-shadow: 0 12px 24px rgba(217, 70, 239, 0.2);        /* 增加阴影 */
-    border-color: #f472b6;                                   /* 边框变为粉红色 */
+    transform: translateY(-8px);
+    /* 向上移动 8px */
+    box-shadow: 0 12px 24px rgba(217, 70, 239, 0.2);
+    /* 增加阴影 */
+    border-color: #f472b6;
+    /* 边框变为粉红色 */
 }
 
 /* ==================== 按钮样式 ==================== */
@@ -61,19 +67,23 @@ body {
 
 /* 主要按钮悬停效果 */
 .btn-primary:hover {
-    transform: translateY(-2px);                             /* 向上移动 2px */
-    box-shadow: 0 6px 20px rgba(217, 70, 239, 0.4);        /* 增加阴影 */
+    transform: translateY(-2px);
+    /* 向上移动 2px */
+    box-shadow: 0 6px 20px rgba(217, 70, 239, 0.4);
+    /* 增加阴影 */
 }
 
 /* ==================== 输入框焦点样式 ==================== */
 
 /* 输入框、文本域、选择框焦点效果 */
-input:focus, 
-textarea:focus, 
+input:focus,
+textarea:focus,
 select:focus {
     outline: none;
-    border-color: #d946ef !important;                       /* 主色边框 */
-    box-shadow: 0 0 0 3px rgba(217, 70, 239, 0.1);         /* 浅紫色光晕 */
+    border-color: #d946ef !important;
+    /* 主色边框 */
+    box-shadow: 0 0 0 3px rgba(217, 70, 239, 0.1);
+    /* 浅紫色光晕 */
 }
 
 /* ==================== 会员徽章样式 ==================== */
@@ -82,7 +92,8 @@ select:focus {
 .membership-badge {
     display: inline-block;
     padding: 4px 12px;
-    border-radius: 999px;    /* 完全圆角 */
+    border-radius: 999px;
+    /* 完全圆角 */
     font-size: 12px;
     font-weight: 600;
 }
@@ -92,7 +103,8 @@ select:focus {
 /* 统计数据柱状条 - 用于显示百分比 */
 .stat-bar {
     height: 100%;
-    transition: width 0.5s ease;   /* 宽度变化平滑过渡 */
+    transition: width 0.5s ease;
+    /* 宽度变化平滑过渡 */
     border-radius: 4px;
 }
 
@@ -100,12 +112,14 @@ select:focus {
 
 /* 填充星（已评分） */
 .star-rating {
-    color: #fbbf24;  /* 黄色 */
+    color: #fbbf24;
+    /* 黄色 */
 }
 
 /* 空星（未评分） */
 .star-empty {
-    color: #d1d5db;  /* 灰色 */
+    color: #d1d5db;
+    /* 灰色 */
 }
 
 /* ==================== 视图转换动画 ==================== */
@@ -114,6 +128,7 @@ select:focus {
 @view-transition {
     navigation: auto;
 }
+
 /* ==================== 新增/修改：Logo 和背景样式 (方案B) ==================== */
 
 /* 1. 登录页面背景 - 改为干净的米色渐变 */
@@ -125,29 +140,41 @@ select:focus {
 
 /* 2. 登录页中间的大圆 Logo 样式 */
 .login-main-logo {
-    width: 220px;          /* Logo 大小，可调整 */
+    width: 220px;
+    /* Logo 大小，可调整 */
     height: 220px;
-    object-fit: contain;   /* 保持图片比例 */
-    border-radius: 50%;    /* 强制变圆 (万一没抠干净也能救一下) */
-    margin: 0 auto 16px;   /* 居中，且距离下方文字 24px */
-    display: block;        /* 块级元素，方便居中 */
+    object-fit: contain;
+    /* 保持图片比例 */
+    border-radius: 50%;
+    /* 强制变圆 (万一没抠干净也能救一下) */
+    margin: 0 auto 16px;
+    /* 居中，且距离下方文字 24px */
+    display: block;
+    /* 块级元素，方便居中 */
     /* 加一点淡淡的阴影，更有悬浮感 */
-    box-shadow: 0 10px 20px rgba(74, 30, 58, 0.1); 
+    box-shadow: 0 10px 20px rgba(74, 30, 58, 0.1);
 }
 
 /* 3. 登录后左上角的 Header Logo 样式 */
 .header-logo-img {
-    height: 60px;          /* 顶部导航栏 Logo 高度 */
+    height: 60px;
+    /* 顶部导航栏 Logo 高度 */
     width: auto;
     object-fit: contain;
 }
+
 /* ==================== 打印专用样式 (解决PDF乱码) ==================== */
 @media print {
+
     /* 打印时隐藏所有按钮、输入框、菜单 */
-    button, input, select, header, .toast {
+    button,
+    input,
+    select,
+    header,
+    .toast {
         display: none !important;
     }
-    
+
     /* 隐藏背景色，节省墨水（可选） */
     body {
         background: white !important;
@@ -155,7 +182,8 @@ select:focus {
     }
 
     /* 确保内容铺满 */
-    #app, .min-h-full {
+    #app,
+    .min-h-full {
         height: auto !important;
         overflow: visible !important;
     }

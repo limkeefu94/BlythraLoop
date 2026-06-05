@@ -979,7 +979,7 @@ window.showBookingModal = function (config, serviceId, serviceName, servicePrice
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div>
                         <label class="block mb-1 font-bold text-sm">日期</label>
-                        <input type="date" id="appointmentDate" required min="${new Date().toISOString().split('T')[0]}"
+                        <input type="date" id="appointmentDate" required min="${getLocalDateString()}"
                             class="w-full px-3 py-3 rounded-lg border-2" style="border-color: ${config.text_color}33;">
                     </div>
                     <div>
@@ -1127,7 +1127,7 @@ window.showBookingModal = function (config, serviceId, serviceName, servicePrice
 // ==========================================
 window.generateReceiptNumber = function () {
     const date = new Date();
-    const prefix = date.toISOString().slice(0, 10).replace(/-/g, '');
+    const prefix = getLocalDateString(date).replace(/-/g, '');
     const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
     return 'ORD-' + prefix + '-' + random;
 };
@@ -1623,4 +1623,3 @@ window.showTicketModal = function (config, booking) {
     document.getElementById('closeTicketBtn').addEventListener('click', close);
     modal.addEventListener('click', (e) => { if (e.target === modal) close(); });
 };
-

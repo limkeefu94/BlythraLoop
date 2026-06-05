@@ -588,7 +588,7 @@ function showBookingModal(config, serviceId, serviceName, servicePrice) {
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div>
                         <label class="block mb-1 font-bold text-sm">日期</label>
-                        <input type="date" id="appointmentDate" required min="${new Date().toISOString().split('T')[0]}"
+                        <input type="date" id="appointmentDate" required min="${getLocalDateString()}"
                             class="w-full px-3 py-3 rounded-lg border-2" style="border-color: ${config.text_color}33;">
                     </div>
                     <div>

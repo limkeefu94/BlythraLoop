@@ -115,8 +115,8 @@ window.dataSdk = {
 // ------------- 第二部分：原本的业务逻辑 (这里必须粘贴你完整的原始代码) -------------
 // 全局状态
 let allData = [];
-let statsStartDate = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0];
-let statsEndDate = new Date().toISOString().split('T')[0];
+let statsStartDate = getLocalDateString(new Date(new Date().getFullYear(), new Date().getMonth(), 1));
+let statsEndDate = getLocalDateString(new Date());
 let cart = [];
 let currentMode = 'login';
 let currentView = 'services';
@@ -3180,7 +3180,7 @@ function showBookingModal(config, serviceId, serviceName, servicePrice) {
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div>
                         <label class="block mb-1 font-bold text-sm">日期</label>
-                        <input type="date" id="appointmentDate" required min="${new Date().toISOString().split('T')[0]}"
+                        <input type="date" id="appointmentDate" required min="${getLocalDateString()}"
                             class="w-full px-3 py-3 rounded-lg border-2" style="border-color: ${config.text_color}33;">
                     </div>
                     <div>
@@ -3680,7 +3680,7 @@ function showCompleteBookingModal(config, booking) {
 
     // 默认时间设为当前时间
     const now = new Date();
-    const todayStr = now.toISOString().split('T')[0];
+    const todayStr = getLocalDateString(now);
     const timeStr = now.toTimeString().slice(0, 5); // HH:mm
 
     modal.innerHTML = `
@@ -4830,7 +4830,7 @@ function exportData() {
 
     // 生成带时间的文件名: GemBrow_Backup_2026-01-02_1430.json
     const now = new Date();
-    const dateStr = now.toISOString().split('T')[0];
+    const dateStr = getLocalDateString(now);
     const timeStr = now.toTimeString().split(' ')[0].replace(/:/g, '');
     const exportFileDefaultName = `GemBrow_Backup_${dateStr}_${timeStr}.json`;
 
@@ -5048,7 +5048,7 @@ function showBlockTimeModal(config) {
                 <div class="grid grid-cols-2 gap-4 mb-4">
                     <div>
                         <label class="block mb-1 font-bold text-sm">日期</label>
-                        <input type="date" id="blockDate" required min="${new Date().toISOString().split('T')[0]}"
+                        <input type="date" id="blockDate" required min="${getLocalDateString()}"
                             class="w-full px-3 py-2 border-2 rounded-lg">
                     </div>
                     <div>
@@ -8447,7 +8447,7 @@ function openCropperModal(imageFile, callback, isRound = false) { // 👈 新增
     reader.readAsDataURL(imageFile);
 }
 
-// 辅助函数：Logo上传专用
+// 辅助函数：图片上传裁剪（Logo/二维码等通用）
 function handleFileWithCrop(file, inputId, previewId, placeholderId, isRound = false) {
     if (!file) return;
     // 👇 把 isRound 传进去
